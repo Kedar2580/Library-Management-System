@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<div th:replace="~{fragments/layout :: shell('Reserve Book', 'reservations', ~{::#content})}">
+    <div id="content">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="card">
+                    <div class="card-header"><i class="bi bi-calendar2-check me-1"></i>Reserve a Book</div>
+                    <div class="card-body">
+                        <p class="text-muted small">
+                            Reservations are only for books with no available copies. When a reserved book is
+                            returned, the first member in the reservation queue is notified automatically.
+                        </p>
+                        <form th:action="@{/circulation/reserve}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">Book (out of stock)</label>
+                                <select name="bookId" class="form-select" required>
+                                    <option value="">-- Choose Book --</option>
+                                    <option th:each="b : ${unavailableBooks}" th:value="${b.id}"
+                                            th:selected="${bookId != null and bookId == b.id}"
+                                            th:text="${b.title}"></option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Member</label>
+                                <select name="memberId" class="form-select" required>
+                                    <option value="">-- Choose Member --</option>
+                                    <option th:each="m : ${members}" th:value="${m.id}"
+                                            th:text="${m.fullName + ' (' + m.membershipNo + ')'}"></option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Reserve</button>
+                            <a class="btn btn-secondary" sec:authorize="hasRole('ADMIN') or hasRole('LIBRARIAN')" th:href="@{/reservations}">Cancel</a>
+                            <a class="btn btn-secondary" sec:authorize="hasRole('MEMBER')" th:href="@{/dashboard}">Cancel</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

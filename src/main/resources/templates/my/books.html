@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('Borrow Books', 'my-books', ~{::#content})}">
+    <div id="content">
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-journal-richtext"></i></div>
+                    <div><div class="value" th:text="${#lists.size(myIssues)}">0</div><div class="label">My Issued Books</div></div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="icon bg-success bg-opacity-10 text-success"><i class="bi bi-book-half"></i></div>
+                    <div><div class="value" th:text="${#lists.size(availableBooks)}">0</div><div class="label">Books Available Now</div></div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-box-arrow-in-right"></i></div>
+                    <div><div class="value" th:text="${#lists.size(myIssues)} + ' / ' + ${maxBooks}">0 / 5</div><div class="label">Borrowed / Limit</div></div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="icon bg-info bg-opacity-10 text-info"><i class="bi bi-calendar2-check"></i></div>
+                    <div><div class="value" th:text="${#lists.size(pendingReservations)}">0</div><div class="label">My Reservations</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header"><i class="bi bi-box-arrow-right me-1"></i>Borrow a Book</div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead><tr><th>Title</th><th>Author</th><th>Category</th><th>Copies</th><th class="text-end">Action</th></tr></thead>
+                    <tbody>
+                    <tr th:each="b : ${availableBooks}">
+                        <td>
+                            <a class="fw-semibold text-decoration-none" th:href="@{/books/{id}(id=${b.id})}" th:text="${b.title}"></a>
+                        </td>
+                        <td th:text="${b.author != null ? b.author.name : '-'}"></td>
+                        <td th:text="${b.category != null ? b.category.name : '-'}"></td>
+                        <td th:text="${b.availableCopies}"></td>
+                        <td class="text-end">
+                            <form th:action="@{/my/books/{id}/borrow(id=${b.id})}" method="post"
+                                  onsubmit="return confirm('Borrow this book?');">
+                                <button class="btn btn-sm btn-primary"><i class="bi bi-plus-lg me-1"></i>Borrow</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(availableBooks)}">
+                        <td colspan="5" class="text-center text-muted py-4">No books available right now. Check back soon.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header"><i class="bi bi-journal-text me-1"></i>My Borrowed Books</div>
+                    <div class="card-body p-0">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead><tr><th>Book</th><th>Due Date</th><th>Status</th></tr></thead>
+                            <tbody>
+                            <tr th:each="i : ${myIssues}">
+                                <td th:text="${i.book.title}"></td>
+                                <td th:text="${i.dueDate}"></td>
+                                <td>
+                                    <span class="badge bg-danger" th:if="${i.overdue}">Overdue</span>
+                                    <span class="badge bg-success" th:if="${!i.overdue}">On time</span>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(myIssues)}">
+                                <td colspan="3" class="text-center text-muted py-4">You have no books borrowed.</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header"><i class="bi bi-calendar2-check me-1"></i>My Reservations</div>
+                    <div class="card-body p-0">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead><tr><th>Book</th><th>Reserved</th><th class="text-end">Action</th></tr></thead>
+                            <tbody>
+                            <tr th:each="r : ${pendingReservations}">
+                                <td th:text="${r.book.title}"></td>
+                                <td class="text-muted small" th:text="${#temporals.format(r.reservedAt, 'MMM dd yyyy')}"></td>
+                                <td class="text-end">
+                                    <form th:action="@{/my/books/reservation/{id}/cancel(id=${r.id})}" method="post">
+                                        <button class="btn btn-sm btn-outline-danger">Cancel</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(pendingReservations)}">
+                                <td colspan="3" class="text-center text-muted py-4">No pending reservations.</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header"><i class="bi bi-clock-history me-1"></i>Unavailable - Reserve Now</div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead><tr><th>Title</th><th>Author</th><th class="text-end">Action</th></tr></thead>
+                    <tbody>
+                    <tr th:each="b : ${unavailableBooks}">
+                        <td th:text="${b.title}"></td>
+                        <td th:text="${b.author != null ? b.author.name : '-'}"></td>
+                        <td class="text-end">
+                            <form th:action="@{/my/books/{id}/reserve(id=${b.id})}" method="post"
+                                  onsubmit="return confirm('Reserve this book?');">
+                                <button class="btn btn-sm btn-outline-warning"><i class="bi bi-bookmark-plus me-1"></i>Reserve</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(unavailableBooks)}">
+                        <td colspan="3" class="text-center text-muted py-4">All books are available for borrowing.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('Notifications', 'notifications', ~{::#content})}">
+    <div id="content">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted" th:text="${#lists.size(notifications)} + ' notification(s)'"></span>
+            <form th:action="@{/notifications/read-all}" method="post">
+                <button class="btn btn-sm btn-outline-primary">Mark all as read</button>
+            </form>
+        </div>
+        <div class="card">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>Type</th><th>Title</th><th>Message</th><th>Date</th><th></th></tr></thead>
+                    <tbody>
+                    <tr th:each="n : ${notifications}" th:classappend="${!n.read} ? 'fw-semibold'">
+                        <td>
+                            <span class="badge badge-soft-primary" th:if="${n.type.name() == 'DUE_DATE'}">Due Date</span>
+                            <span class="badge badge-soft-danger" th:if="${n.type.name() == 'OVERDUE'}">Overdue</span>
+                            <span class="badge badge-soft-info" th:if="${n.type.name() == 'RESERVATION'}">Reservation</span>
+                            <span class="badge badge-soft-secondary" th:if="${n.type.name() == 'SYSTEM'}">System</span>
+                        </td>
+                        <td th:text="${n.title}"></td>
+                        <td th:text="${n.message}"></td>
+                        <td class="text-muted small" th:text="${#temporals.format(n.createdAt, 'MMM dd HH:mm')}"></td>
+                        <td class="text-end">
+                            <form th:action="@{/notifications/{id}/read(id=${n.id})}" method="post" th:if="${!n.read}">
+                                <button class="btn btn-sm btn-light">Mark read</button>
+                            </form>
+                            <span class="text-muted small" th:unless="${!n.read}"><i class="bi bi-check2"></i></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(notifications)}">
+                        <td colspan="5" class="text-center text-muted py-4">No notifications.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

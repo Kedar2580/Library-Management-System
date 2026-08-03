@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('Return Book', 'returns', ~{::#content})}">
+    <div id="content">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-arrow-return-left me-1"></i>Return a Book</div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead><tr><th>Book</th><th>Member</th><th>Issue Date</th><th>Due Date</th><th>Days Late</th><th>Status</th><th class="text-end">Action</th></tr></thead>
+                    <tbody>
+                    <tr th:each="i : ${activeIssues}" th:classappend="${i.isOverdue} ? 'overdue-row'">
+                        <td class="fw-semibold" th:text="${i.book.title}"></td>
+                        <td th:text="${i.member.fullName}"></td>
+                        <td th:text="${i.issueDate}"></td>
+                        <td th:text="${i.dueDate}"></td>
+                        <td th:text="${i.overdueDays} > 0 ? ${i.overdueDays} + ' day(s)' : '-'"></td>
+                        <td>
+                            <span class="badge badge-soft-danger" th:if="${i.isOverdue}">Overdue</span>
+                            <span class="badge badge-soft-warning" th:unless="${i.isOverdue}">On time</span>
+                        </td>
+                        <td class="text-end">
+                            <form th:action="@{/circulation/return}" method="post" class="d-inline">
+                                <input type="hidden" name="issueId" th:value="${i.id}">
+                                <button class="btn btn-sm btn-success" th:if="${i.isOverdue}"
+                                        onclick="return confirm('This book is overdue and a fine will be calculated. Continue?')">
+                                    Return &amp; Calculate Fine
+                                </button>
+                                <button class="btn btn-sm btn-success" th:unless="${i.isOverdue}">
+                                    Return Book
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(activeIssues)}">
+                        <td colspan="7" class="text-center text-muted py-4">No active issues to return.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('Issue History', 'issues', ~{::#content})}">
+    <div id="content">
+        <ul class="nav nav-pills mb-3">
+            <li class="nav-item"><a class="nav-link" th:classappend="${view == 'all'} ? 'active'" th:href="@{/issues(view='all')}">All Issues</a></li>
+            <li class="nav-item"><a class="nav-link" th:classappend="${view == 'active'} ? 'active'" th:href="@{/issues(view='active')}">Active</a></li>
+            <li class="nav-item"><a class="nav-link" th:classappend="${view == 'returned'} ? 'active'" th:href="@{/issues(view='returned')}">Returned</a></li>
+        </ul>
+
+        <div class="card">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead><tr><th>Book</th><th>Member</th><th>Issue Date</th><th>Due Date</th><th>Returned</th><th>Status</th><th>Fine</th></tr></thead>
+                    <tbody>
+                    <tr th:each="i : ${allIssues}" th:if="${view == 'all'}">
+                        <td class="fw-semibold" th:text="${i.book.title}"></td>
+                        <td th:text="${i.member.fullName}"></td>
+                        <td th:text="${i.issueDate}"></td>
+                        <td th:text="${i.dueDate}"></td>
+                        <td th:text="${i.returnDate != null ? i.returnDate : '-'}"></td>
+                        <td>
+                            <span class="badge badge-soft-danger" th:if="${i.status.name() == 'OVERDUE'}">Overdue</span>
+                            <span class="badge badge-soft-warning" th:if="${i.status.name() == 'ISSUED'}">Issued</span>
+                            <span class="badge badge-soft-success" th:if="${i.status.name() == 'RETURNED'}">Returned</span>
+                        </td>
+                        <td th:text="${i.fineAmount > 0 ? '$' + i.fineAmount : '-'}"></td>
+                    </tr>
+                    <tr th:each="i : ${activeIssues}" th:if="${view == 'active' && !i.isOverdue}">
+                        <td class="fw-semibold" th:text="${i.book.title}"></td>
+                        <td th:text="${i.member.fullName}"></td>
+                        <td th:text="${i.issueDate}"></td>
+                        <td th:text="${i.dueDate}"></td>
+                        <td>-</td>
+                        <td><span class="badge badge-soft-warning">Issued</span></td>
+                        <td th:text="${i.fineAmount > 0 ? '$' + i.fineAmount : '-'}"></td>
+                    </tr>
+                    <tr th:each="i : ${activeIssues}" th:if="${view == 'active' && i.isOverdue}">
+                        <td class="fw-semibold" th:text="${i.book.title}"></td>
+                        <td th:text="${i.member.fullName}"></td>
+                        <td th:text="${i.issueDate}"></td>
+                        <td th:text="${i.dueDate}"></td>
+                        <td>-</td>
+                        <td><span class="badge badge-soft-danger">Overdue</span></td>
+                        <td th:text="${i.fineAmount > 0 ? '$' + i.fineAmount : '-'}"></td>
+                    </tr>
+                    <tr th:each="i : ${returnedIssues}" th:if="${view == 'returned'}">
+                        <td class="fw-semibold" th:text="${i.book.title}"></td>
+                        <td th:text="${i.member.fullName}"></td>
+                        <td th:text="${i.issueDate}"></td>
+                        <td th:text="${i.dueDate}"></td>
+                        <td th:text="${i.returnDate != null ? i.returnDate : '-'}"></td>
+                        <td><span class="badge badge-soft-success">Returned</span></td>
+                        <td th:text="${i.fineAmount > 0 ? '$' + i.fineAmount : '-'}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<div th:replace="~{fragments/layout :: shell('Book Form', 'books', ~{::#content})}">
+    <div id="content">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <span th:if="${book.id == null}">Add Book</span>
+                        <span th:unless="${book.id == null}">Edit Book: <em th:text="${book.title}"></em></span>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/books/save}" method="post">
+                            <input type="hidden" name="id" th:value="${book.id}">
+                            <div class="row g-3">
+                                <div class="col-md-8">
+                                    <label class="form-label">Title *</label>
+                                    <input type="text" name="title" class="form-control" th:value="${book.title}" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">ISBN</label>
+                                    <input type="text" name="isbn" class="form-control" th:value="${book.isbn}">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Category</label>
+                                    <select name="category.id" class="form-select">
+                                        <option value="">-- Select Category --</option>
+                                        <option th:each="c : ${categories}" th:value="${c.id}"
+                                                th:selected="${book.category != null and book.category.id == c.id}"
+                                                th:text="${c.name}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Author</label>
+                                    <select name="author.id" class="form-select">
+                                        <option value="">-- Select Author --</option>
+                                        <option th:each="a : ${authors}" th:value="${a.id}"
+                                                th:selected="${book.author != null and book.author.id == a.id}"
+                                                th:text="${a.name}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Publisher</label>
+                                    <select name="publisher.id" class="form-select">
+                                        <option value="">-- Select Publisher --</option>
+                                        <option th:each="p : ${publishers}" th:value="${p.id}"
+                                                th:selected="${book.publisher != null and book.publisher.id == p.id}"
+                                                th:text="${p.name}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Publication Year</label>
+                                    <input type="number" name="publicationYear" class="form-control"
+                                           th:value="${book.publicationYear}" min="1000" max="2100">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Total Copies</label>
+                                    <input type="number" name="totalCopies" class="form-control"
+                                           th:value="${book.totalCopies}" min="1" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Shelf Location</label>
+                                    <input type="text" name="shelfLocation" class="form-control" th:value="${book.shelfLocation}">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Description</label>
+                                    <textarea name="description" class="form-control" rows="3"
+                                              th:text="${book.description}"></textarea>
+                                </div>
+                            </div>
+                            <div class="mt-4 d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">Save Book</button>
+                                <a class="btn btn-secondary" th:href="@{/books}">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

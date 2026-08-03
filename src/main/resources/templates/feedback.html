@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('Feedback', 'feedback', ~{::#content})}">
+    <div id="content">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header"><i class="bi bi-chat-dots me-1"></i>Send Feedback / Suggestion</div>
+                    <div class="card-body">
+                        <p class="text-muted small">
+                            We value your input. Share your feedback, suggestions, or questions with the library team.
+                        </p>
+                        <form th:action="@{/feedback/submit}" method="post">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Name</label>
+                                    <input type="text" name="name" class="form-control"
+                                           th:value="${currentUser != null ? currentUser.fullName : ''}" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" name="email" class="form-control"
+                                           th:value="${currentUser != null ? currentUser.email : ''}" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Type</label>
+                                <select name="type" class="form-select">
+                                    <option th:each="t : ${types}" th:value="${t.name()}" th:text="${t.label}"></option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Subject</label>
+                                <input type="text" name="subject" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Message</label>
+                                <textarea name="content" class="form-control" rows="4" required></textarea>
+                            </div>
+                            <button class="btn btn-primary"><i class="bi bi-send me-1"></i>Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

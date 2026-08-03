@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('Help', 'help', ~{::#content})}">
+    <div id="content">
+        <div class="row g-3">
+            <div class="col-lg-8">
+                <div class="card mb-3">
+                    <div class="card-header"><i class="bi bi-question-circle me-1"></i>Frequently Asked Questions</div>
+                    <div class="card-body">
+                        <div class="accordion" id="faq">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                        How do I borrow a book?
+                                    </button>
+                                </h2>
+                                <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faq">
+                                    <div class="accordion-body">
+                                        Go to <strong>Issue Book</strong>, select the member and the book, then click Issue.
+                                        The due date is set automatically based on the loan period setting.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                        How are fines calculated?
+                                    </button>
+                                </h2>
+                                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faq">
+                                    <div class="accordion-body">
+                                        Fines are calculated automatically when a book is returned late, at the rate set in
+                                        <em>System Settings (fine per day)</em>.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                        How do I reserve a book that is out of stock?
+                                    </button>
+                                </h2>
+                                <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faq">
+                                    <div class="accordion-body">
+                                        Go to <strong>Reservations → New Reservation</strong> and choose the member and book.
+                                        When the book is returned, the first member in the queue is notified automatically.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                        Can I import books in bulk?
+                                    </button>
+                                </h2>
+                                <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faq">
+                                    <div class="accordion-body">
+                                        Yes. Use <strong>Books → Import CSV</strong> and upload a file with the expected columns.
+                                        Export a sample CSV first to use as a template.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><i class="bi bi-info-circle me-1"></i>About Library</div>
+                    <div class="card-body">
+                        <p th:text="${'Welcome to ' + libraryName + '.'}"></p>
+                        <p class="text-muted mb-1">This system manages the library catalog, members, circulation, fines, reservations, and reporting.</p>
+                        <p class="text-muted small mb-0">
+                            Book reviews and feedback help us improve. Notifications keep members informed of due dates,
+                            overdue books, and reservation availability.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header"><i class="bi bi-envelope me-1"></i>Contact the Librarian</div>
+                    <div class="card-body">
+                        <table class="table table-sm mb-0">
+                            <tr><th class="text-muted">Email</th><td th:text="${contactEmail}"></td></tr>
+                            <tr><th class="text-muted">Phone</th><td th:text="${contactPhone}"></td></tr>
+                            <tr><th class="text-muted">Address</th><td th:text="${address}"></td></tr>
+                        </table>
+                        <a class="btn btn-primary mt-3 w-100" th:href="@{/feedback}">
+                            <i class="bi bi-chat-dots me-1"></i>Send a Message
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('Record Payment', 'fines', ~{::#content})}">
+    <div id="content">
+
+        <div class="card mb-3">
+            <div class="card-header"><i class="bi bi-cash-coin me-1"></i>Record Late Fee Payment</div>
+            <div class="card-body">
+                <p class="text-muted small mb-0">
+                    Select the pending fines being paid, choose a payment method and enter a receipt /
+                    transaction reference. A payment confirmation is sent to the member.
+                </p>
+            </div>
+        </div>
+
+        <form th:action="@{/fines/pay}" method="post">
+            <div class="row g-3">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span>Pending Fines to Collect</span>
+                            <span class="text-danger fw-semibold">
+                                Selected: <span id="selectedCount">0</span> |
+                                Total: $<span id="selectedTotal">0.00</span>
+                            </span>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-hover mb-0 align-middle">
+                                <thead>
+                                <tr><th style="width:36px"><input class="form-check-input" type="checkbox" id="checkAll"></th>
+                                    <th>Member</th><th>Book</th><th>Reason</th><th>Date</th><th class="text-end">Amount</th></tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="f : ${pendingFines}" class="fine-row" data-amount="${f.amount}">
+                                    <td>
+                                        <input class="form-check-input fine-check" type="checkbox" name="fineIds"
+                                               th:value="${f.id}" th:checked="${preselectId != null and preselectId == f.id}">
+                                    </td>
+                                    <td th:text="${f.member.fullName}"></td>
+                                    <td th:text="${f.issue != null ? f.issue.book.title : '-'}"></td>
+                                    <td th:text="${f.reason}"></td>
+                                    <td th:text="${f.createdAt.toLocalDate()}"></td>
+                                    <td class="text-end fw-semibold text-danger"
+                                        th:text="'$' + ${#numbers.formatDecimal(f.amount, 1, 2)}"></td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(pendingFines)}">
+                                    <td colspan="6" class="text-center text-muted py-4">No pending fines to collect.</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">Payment Details</div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Payment Method</label>
+                                <select name="paymentMethod" class="form-select" required>
+                                    <option value="CASH">Cash</option>
+                                    <option value="CARD">Card</option>
+                                    <option value="ONLINE">Online</option>
+                                    <option value="OTHER">Other</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Receipt / Reference No.</label>
+                                <input type="text" name="reference" class="form-control"
+                                       placeholder="e.g. RCPT-001 or transaction ID">
+                            </div>
+                            <button class="btn btn-success w-100" th:disabled="${#lists.isEmpty(pendingFines)}">
+                                <i class="bi bi-check2-circle me-1"></i>Record Payment
+                            </button>
+                            <a class="btn btn-outline-secondary w-100 mt-2" th:href="@{/fines}">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const checks = document.querySelectorAll('.fine-check');
+        const countEl = document.getElementById('selectedCount');
+        const totalEl = document.getElementById('selectedTotal');
+        const checkAll = document.getElementById('checkAll');
+
+        function updateTotals() {
+            let total = 0, count = 0;
+            checks.forEach(c => {
+                if (c.checked) {
+                    count++;
+                    const row = c.closest('.fine-row');
+                    total += parseFloat(row.getAttribute('data-amount'));
+                }
+            });
+            countEl.textContent = count;
+            totalEl.textContent = total.toFixed(2);
+            if (checkAll) {
+                checkAll.checked = checks.length > 0 && count === checks.length;
+            }
+        }
+
+        checks.forEach(c => c.addEventListener('change', updateTotals));
+        if (checkAll) {
+            checkAll.addEventListener('change', function () {
+                checks.forEach(c => c.checked = this.checked);
+                updateTotals();
+            });
+        }
+        updateTotals();
+    </script>
+</div>
+</body>
+</html>

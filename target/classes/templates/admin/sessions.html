@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('Active Sessions', 'admin-sessions', ~{::#content})}">
+    <div id="content">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted">
+                <i class="bi bi-people me-1"></i>
+                <span class="fw-semibold" th:text="${#lists.size(activeSessions)}"></span> user(s) currently logged in
+            </span>
+            <a class="btn btn-outline-secondary btn-sm" th:href="@{/admin/sessions}">
+                <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><i class="bi bi-person-check me-1"></i>Who's Logged In Right Now</div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Last Activity</th>
+                        <th>Session</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="s : ${activeSessions}">
+                        <td class="fw-semibold">
+                            <i class="bi bi-person-circle text-success me-1"></i>
+                            <span th:text="${s.fullName}"></span>
+                        </td>
+                        <td th:text="${s.username}"></td>
+                        <td>
+                            <span class="badge bg-success" th:if="${s.role == 'Admin'}">Administrator</span>
+                            <span class="badge bg-primary" th:if="${s.role == 'Librarian'}">Librarian</span>
+                            <span class="badge bg-secondary" th:if="${s.role == 'Member'}">Member</span>
+                        </td>
+                        <td class="text-muted small" th:text="${#dates.format(s.lastRequest, 'MMM dd yyyy HH:mm')}"></td>
+                        <td>
+                            <code class="small" th:text="${#strings.abbreviate(s.sessionId, 16)}"></code>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(activeSessions)}">
+                        <td colspan="5" class="text-center text-muted py-4">
+                            <i class="bi bi-person-slash me-1"></i>No one is currently logged in.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('Reports', 'reports', ~{::#content})}">
+    <div id="content">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-box-arrow-right fs-2 text-primary"></i>
+                        <h5 class="mt-2">Issued Books Report</h5>
+                        <p class="text-muted small">All books issued within a date range.</p>
+                        <a class="btn btn-sm btn-primary" th:href="@{/reports/view(type='issued')}">View</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-arrow-return-left fs-2 text-success"></i>
+                        <h5 class="mt-2">Returned Books Report</h5>
+                        <p class="text-muted small">All books returned within a date range.</p>
+                        <a class="btn btn-sm btn-primary" th:href="@{/reports/view(type='returned')}">View</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-cash-stack fs-2 text-warning"></i>
+                        <h5 class="mt-2">Fine Report</h5>
+                        <p class="text-muted small">Fines collected and pending within a date range.</p>
+                        <a class="btn btn-sm btn-primary" th:href="@{/reports/view(type='fines')}">View</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-journal-text fs-2 text-info"></i>
+                        <h5 class="mt-2">Inventory Report</h5>
+                        <p class="text-muted small">Full catalog with copy availability.</p>
+                        <a class="btn btn-sm btn-primary" th:href="@{/reports/view(type='inventory')}">View</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-calendar-day fs-2 text-danger"></i>
+                        <h5 class="mt-2">Daily Report</h5>
+                        <p class="text-muted small">Issues and returns for a single day.</p>
+                        <a class="btn btn-sm btn-primary" th:href="@{/reports/view(type='daily')}">View</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-calendar-month fs-2 text-secondary"></i>
+                        <h5 class="mt-2">Monthly Report</h5>
+                        <p class="text-muted small">Issues and returns summarized per day.</p>
+                        <a class="btn btn-sm btn-primary" th:href="@{/reports/view(type='monthly')}">View</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-body text-center">
+                <i class="bi bi-book fs-2 text-success"></i>
+                <h5 class="mt-2">Library Catalog (PDF)</h5>
+                <p class="text-muted small">All books grouped by category (Motivational, Science, Fiction, Biography, History, Business).</p>
+                <a class="btn btn-success" th:href="@{/reports/catalog/pdf}">
+                    <i class="bi bi-filetype-pdf me-1"></i>Download Catalog PDF
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('Reservations', 'reservations', ~{::#content})}">
+    <div id="content">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted" th:text="${#lists.size(reservations)} + ' pending reservations'"></span>
+            <a class="btn btn-primary" th:href="@{/circulation/reserve}"><i class="bi bi-plus-lg me-1"></i>New Reservation</a>
+        </div>
+        <div class="card">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead><tr><th>#</th><th>Book</th><th>Member</th><th>Reserved At</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+                    <tbody>
+                    <tr th:each="r, st : ${reservations}">
+                        <td th:text="${st.count}"></td>
+                        <td class="fw-semibold" th:text="${r.book.title}"></td>
+                        <td th:text="${r.member.fullName}"></td>
+                        <td th:text="${#temporals.format(r.reservedAt, 'MMM dd HH:mm')}"></td>
+                        <td><span class="badge badge-soft-warning">Pending</span></td>
+                        <td class="text-end">
+                            <form th:action="@{/circulation/reservation/{id}/cancel(id=${r.id})}" method="post"
+                                  onsubmit="return confirm('Cancel this reservation?');">
+                                <button class="btn btn-sm btn-outline-danger">Cancel</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(reservations)}">
+                        <td colspan="6" class="text-center text-muted py-4">No pending reservations.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

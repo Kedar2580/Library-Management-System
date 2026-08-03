@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('Reviews', 'reviews', ~{::#content})}">
+    <div id="content">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted" th:text="${#lists.size(reviews)} + ' review(s)'"></span>
+            <div>
+                <form class="d-flex gap-2" th:action="@{/reviews}" method="get">
+                    <input type="number" name="bookId" class="form-control" style="width:120px"
+                           placeholder="Book ID" th:value="${bookId}">
+                    <button class="btn btn-outline-primary">Filter by Book</button>
+                    <a class="btn btn-outline-secondary" th:href="@{/reviews}">Clear</a>
+                </form>
+            </div>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-6" th:each="r : ${reviews}">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <span class="fw-semibold" th:text="${r.user.fullName}"></span>
+                            <span class="text-muted small" th:text="${#temporals.format(r.createdAt, 'MMM dd yyyy')}"></span>
+                        </div>
+                        <span th:each="i : ${#numbers.sequence(1, 5)}">
+                            <i class="bi bi-star-fill text-warning" th:classappend="${i > r.rating} ? 'empty'"></i>
+                        </span>
+                        <div class="mt-1">
+                            <a class="fw-semibold text-decoration-none" th:href="@{/books/{id}(id=${r.book.id})}"
+                               th:text="${r.book.title}"></a>
+                        </div>
+                        <p class="text-muted mb-0 mt-1" th:text="${r.comment}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p class="text-muted text-center mt-4" th:if="${#lists.isEmpty(reviews)}">No reviews yet.</p>
+    </div>
+</div>
+</body>
+</html>

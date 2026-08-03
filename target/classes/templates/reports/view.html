@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('Report', 'reports', ~{::#content})}">
+    <div id="content">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <h4 class="mb-0" th:text="${report.title}">Report</h4>
+            <div class="d-flex gap-2">
+                <form class="d-flex gap-2 align-items-end" th:action="@{/reports/view}" method="get">
+                    <input type="hidden" name="type" th:value="${type}">
+                    <div th:if="${type == 'issued' or type == 'returned' or type == 'fines'}">
+                        <label class="form-label small mb-0">From</label>
+                        <input type="date" name="from" class="form-control form-control-sm" th:value="${from}">
+                    </div>
+                    <div th:if="${type == 'issued' or type == 'returned' or type == 'fines'}">
+                        <label class="form-label small mb-0">To</label>
+                        <input type="date" name="to" class="form-control form-control-sm" th:value="${to}">
+                    </div>
+                    <div th:if="${type == 'daily'}">
+                        <label class="form-label small mb-0">Day</label>
+                        <input type="date" name="day" class="form-control form-control-sm" th:value="${day}">
+                    </div>
+                    <div th:if="${type == 'monthly'}">
+                        <input type="number" name="year" class="form-control form-control-sm" style="width:90px"
+                               th:value="${year}" min="2000" max="2100">
+                        <select name="month" class="form-select form-select-sm" style="width:130px">
+                            <option value="1" th:selected="${month == 1}">January</option>
+                            <option value="2" th:selected="${month == 2}">February</option>
+                            <option value="3" th:selected="${month == 3}">March</option>
+                            <option value="4" th:selected="${month == 4}">April</option>
+                            <option value="5" th:selected="${month == 5}">May</option>
+                            <option value="6" th:selected="${month == 6}">June</option>
+                            <option value="7" th:selected="${month == 7}">July</option>
+                            <option value="8" th:selected="${month == 8}">August</option>
+                            <option value="9" th:selected="${month == 9}">September</option>
+                            <option value="10" th:selected="${month == 10}">October</option>
+                            <option value="11" th:selected="${month == 11}">November</option>
+                            <option value="12" th:selected="${month == 12}">December</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary">Apply</button>
+                </form>
+                <a class="btn btn-sm btn-outline-success"
+                   th:href="@{/reports/export(type=${type}, from=${from}, to=${to}, day=${day}, year=${year}, month=${month})}">
+                    <i class="bi bi-download me-1"></i>Export CSV
+                </a>
+                <a class="btn btn-sm btn-outline-danger"
+                   th:href="@{/reports/export/pdf(type=${type}, from=${from}, to=${to}, day=${day}, year=${year}, month=${month})}">
+                    <i class="bi bi-filetype-pdf me-1"></i>Export PDF
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body p-0">
+                <table class="table table-sm table-hover mb-0">
+                    <thead>
+                    <tr>
+                        <th th:each="h : ${report.headers}" th:text="${h}"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="row : ${report.rows}">
+                        <td th:each="cell : ${row}" th:text="${cell}"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(report.rows)}">
+                        <td th:attr="colspan=${#arrays.length(report.headers)}" class="text-center text-muted py-4">No data.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('Author Form', 'authors', ~{::#content})}">
+    <div id="content">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">Author</div>
+                    <div class="card-body">
+                        <form th:action="@{/authors/save}" method="post">
+                            <input type="hidden" name="id" th:value="${author.id}">
+                            <div class="mb-3">
+                                <label class="form-label">Name *</label>
+                                <input type="text" name="name" class="form-control" th:value="${author.name}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Birth Year</label>
+                                <input type="number" name="birthYear" class="form-control" th:value="${author.birthYear}" min="1000" max="2100">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Biography</label>
+                                <textarea name="biography" class="form-control" rows="4" th:text="${author.biography}"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <a class="btn btn-secondary" th:href="@{/authors}">Cancel</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

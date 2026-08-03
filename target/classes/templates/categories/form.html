@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('Category Form', 'categories', ~{::#content})}">
+    <div id="content">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">Category</div>
+                    <div class="card-body">
+                        <form th:action="@{/categories/save}" method="post">
+                            <input type="hidden" name="id" th:value="${category.id}">
+                            <div class="mb-3">
+                                <label class="form-label">Name *</label>
+                                <input type="text" name="name" class="form-control" th:value="${category.name}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Description</label>
+                                <textarea name="description" class="form-control" rows="3" th:text="${category.description}"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <a class="btn btn-secondary" th:href="@{/categories}">Cancel</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

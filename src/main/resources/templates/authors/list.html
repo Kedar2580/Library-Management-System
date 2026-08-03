@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('Authors', 'authors', ~{::#content})}">
+    <div id="content">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <div class="lead mb-1">Author Management</div>
+                <span class="text-muted" th:text="${#lists.size(authors)} + ' authors'"></span>
+            </div>
+            <a class="btn btn-primary" th:href="@{/authors/new}"><i class="bi bi-plus-lg me-1"></i>Add Author</a>
+        </div>
+        <div class="card">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>ID</th><th>Name</th><th>Born</th><th>Biography</th><th class="text-end">Actions</th></tr></thead>
+                    <tbody>
+                    <tr th:each="a : ${authors}">
+                        <td th:text="${a.id}"></td>
+                        <td class="fw-semibold" th:text="${a.name}"></td>
+                        <td th:text="${a.birthYear}"></td>
+                        <td th:text="${a.biography}"></td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-light" th:href="@{/authors/{id}/edit(id=${a.id})}"><i class="bi bi-pencil"></i></a>
+                            <form class="d-inline" th:action="@{/authors/{id}/delete(id=${a.id})}" method="post"
+                                  onsubmit="return confirm('Delete this author?');">
+                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(authors)}"><td colspan="5" class="text-center text-muted py-4">No authors.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

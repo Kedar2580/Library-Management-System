@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('Publishers', 'publishers', ~{::#content})}">
+    <div id="content">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <div class="lead mb-1">Publisher Management</div>
+                <span class="text-muted" th:text="${#lists.size(publishers)} + ' publishers'"></span>
+            </div>
+            <a class="btn btn-primary" th:href="@{/publishers/new}"><i class="bi bi-plus-lg me-1"></i>Add Publisher</a>
+        </div>
+        <div class="card">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>ID</th><th>Name</th><th>Address</th><th>Phone</th><th>Email</th><th class="text-end">Actions</th></tr></thead>
+                    <tbody>
+                    <tr th:each="p : ${publishers}">
+                        <td th:text="${p.id}"></td>
+                        <td class="fw-semibold" th:text="${p.name}"></td>
+                        <td th:text="${p.address}"></td>
+                        <td th:text="${p.phone}"></td>
+                        <td th:text="${p.email}"></td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-light" th:href="@{/publishers/{id}/edit(id=${p.id})}"><i class="bi bi-pencil"></i></a>
+                            <form class="d-inline" th:action="@{/publishers/{id}/delete(id=${p.id})}" method="post"
+                                  onsubmit="return confirm('Delete this publisher?');">
+                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(publishers)}"><td colspan="6" class="text-center text-muted py-4">No publishers.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

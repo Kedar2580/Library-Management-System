@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('Backup &amp; Restore', 'admin-backup', ~{::#content})}">
+    <div id="content">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="card mb-3">
+                    <div class="card-header"><i class="bi bi-database-down me-1"></i>Backup Database</div>
+                    <div class="card-body">
+                        <p class="text-muted">
+                            Create a full snapshot of the database (books, members, issues, fines, settings, ...)
+                            as a downloadable SQL script.
+                        </p>
+                        <a class="btn btn-primary" th:href="@{/admin/backup/download}">
+                            <i class="bi bi-download me-1"></i>Download Backup
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header text-danger"><i class="bi bi-database-up me-1"></i>Restore Database</div>
+                    <div class="card-body">
+                        <div class="alert alert-warning small">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            Restoring will <strong>replace all current data</strong>. This action cannot be undone.
+                        </div>
+                        <form th:action="@{/admin/restore}" method="post" enctype="multipart/form-data"
+                              onsubmit="return confirm('This will replace ALL current data. Continue?');">
+                            <div class="mb-3">
+                                <input type="file" name="file" class="form-control" accept=".sql" required>
+                            </div>
+                            <button class="btn btn-danger"><i class="bi bi-arrow-counterclockwise me-1"></i>Restore from File</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

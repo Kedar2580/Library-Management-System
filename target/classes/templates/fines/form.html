@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('Add Fine', 'fines', ~{::#content})}">
+    <div id="content">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="card">
+                    <div class="card-header"><i class="bi bi-cash-stack me-1"></i>Add Fine</div>
+                    <div class="card-body">
+                        <form th:action="@{/fines/add}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">Member</label>
+                                <select name="memberId" class="form-select" required>
+                                    <option value="">-- Choose Member --</option>
+                                    <option th:each="m : ${members}" th:value="${m.id}"
+                                            th:text="${m.fullName + ' (' + m.membershipNo + ')'}"></option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Amount ($)</label>
+                                <input type="number" name="amount" class="form-control" step="0.5" min="0.5" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Reason</label>
+                                <textarea name="reason" class="form-control" rows="2"
+                                          placeholder="e.g. Lost book, late return, damaged copy..."></textarea>
+                            </div>
+                            <button class="btn btn-success">Add Fine</button>
+                            <a class="btn btn-outline-secondary" th:href="@{/fines}">Cancel</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

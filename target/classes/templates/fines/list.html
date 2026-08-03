@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('Fines', 'fines', ~{::#content})}">
+    <div id="content">
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-hourglass-split"></i></div>
+                    <div><div class="value" th:text="'$' + ${#numbers.formatDecimal(pendingTotal, 1, 2)}">0</div><div class="label">Pending Fines</div></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="icon bg-success bg-opacity-10 text-success"><i class="bi bi-check-circle"></i></div>
+                    <div><div class="value" th:text="'$' + ${#numbers.formatDecimal(paidTotal, 1, 2)}">0</div><div class="label">Paid Fines</div></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-cash-stack"></i></div>
+                    <div><div class="value" th:text="${#lists.size(pendingFines)}">0</div><div class="label">Pending Count</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end mb-3">
+            <a class="btn btn-outline-success me-2" th:href="@{/fines/pay}"><i class="bi bi-cash-coin me-1"></i>Record Payment</a>
+            <a class="btn btn-success" th:href="@{/fines/new}"><i class="bi bi-plus-lg me-1"></i>Add Fine</a>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Pending Fines</div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead><tr><th>Member</th><th>Book</th><th>Reason</th><th>Date</th><th>Amount</th><th class="text-end">Action</th></tr></thead>
+                    <tbody>
+                    <tr th:each="f : ${pendingFines}">
+                        <td th:text="${f.member.fullName}"></td>
+                        <td th:text="${f.issue != null ? f.issue.book.title : '-'}"></td>
+                        <td th:text="${f.reason}"></td>
+                        <td th:text="${f.createdAt.toLocalDate()}"></td>
+                        <td class="fw-semibold text-danger" th:text="'$' + ${#numbers.formatDecimal(f.amount, 1, 2)}"></td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-success" th:href="@{/fines/pay(fineId=${f.id})}">
+                                <i class="bi bi-cash-coin me-1"></i>Pay
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(pendingFines)}"><td colspan="6" class="text-center text-muted py-4">No pending fines.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">Fine History (Paid)</div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>Member</th><th>Book</th><th>Amount</th><th>Method</th><th>Reference</th><th>Paid At</th></tr></thead>
+                    <tbody>
+                    <tr th:each="f : ${paidFines}">
+                        <td th:text="${f.member.fullName}"></td>
+                        <td th:text="${f.issue != null ? f.issue.book.title : '-'}"></td>
+                        <td th:text="'$' + ${#numbers.formatDecimal(f.amount, 1, 2)}"></td>
+                        <td th:text="${f.paymentMethod != null ? f.paymentMethod.label : '-'}"></td>
+                        <td th:text="${f.paymentReference != null ? f.paymentReference : '-'}"></td>
+                        <td th:text="${f.paidAt != null ? f.paidAt.toLocalDate() : '-'}"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(paidFines)}"><td colspan="6" class="text-center text-muted py-4">No paid fines.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('My Profile', 'profile', ~{::#content})}">
+    <div id="content">
+        <div class="row g-3">
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-person-circle text-primary" style="font-size:4rem;"></i>
+                        <h4 class="mt-2" th:text="${user.fullName}"></h4>
+                        <p class="text-muted mb-0" th:text="'@' + ${user.username}"></p>
+                        <span class="badge badge-soft-primary" th:text="${user.role.label}"></span>
+                        <hr>
+                        <table class="table table-sm text-start mb-0">
+                            <tr><th class="text-muted">Email</th><td th:text="${user.email}"></td></tr>
+                            <tr><th class="text-muted">Phone</th><td th:text="${user.phone != null ? user.phone : '-'}"></td></tr>
+                            <tr><th class="text-muted">Address</th><td th:text="${user.address != null ? user.address : '-'}"></td></tr>
+                            <tr><th class="text-muted">Membership</th><td th:text="${user.membershipNo != null ? user.membershipNo : '-'}"></td></tr>
+                            <tr><th class="text-muted">Joined</th><td th:text="${user.joinedDate}"></td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="card mb-3">
+                    <div class="card-header">Edit Profile</div>
+                    <div class="card-body">
+                        <form th:action="@{/profile/edit}" method="post">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" name="fullName" class="form-control" th:value="${user.fullName}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" name="email" class="form-control" th:value="${user.email}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Phone</label>
+                                    <input type="text" name="phone" class="form-control" th:value="${user.phone}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Address</label>
+                                    <input type="text" name="address" class="form-control" th:value="${user.address}">
+                                </div>
+                            </div>
+                            <button class="btn btn-primary mt-3">Save Profile</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header">Borrowing History</div>
+                    <div class="card-body p-0">
+                        <table class="table table-sm mb-0">
+                            <thead><tr><th>Book</th><th>Issued</th><th>Due</th><th>Returned</th><th>Status</th></tr></thead>
+                            <tbody>
+                            <tr th:each="i : ${issues}">
+                                <td th:text="${i.book.title}"></td>
+                                <td th:text="${i.issueDate}"></td>
+                                <td th:text="${i.dueDate}"></td>
+                                <td th:text="${i.returnDate != null ? i.returnDate : '-'}"></td>
+                                <td>
+                                    <span class="badge badge-soft-danger" th:if="${i.status.name() == 'OVERDUE'}">Overdue</span>
+                                    <span class="badge badge-soft-warning" th:if="${i.status.name() == 'ISSUED'}">Issued</span>
+                                    <span class="badge badge-soft-success" th:if="${i.status.name() == 'RETURNED'}">Returned</span>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(issues)}"><td colspan="5" class="text-center text-muted py-3">No borrowing history.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">My Fines</div>
+                            <div class="card-body p-0">
+                                <table class="table table-sm mb-0">
+                                    <thead><tr><th>Book</th><th>Amount</th><th>Status</th></tr></thead>
+                                    <tbody>
+                                    <tr th:each="f : ${fines}">
+                                        <td th:text="${f.issue != null ? f.issue.book.title : '-'}"></td>
+                                        <td th:text="'$' + ${#numbers.formatDecimal(f.amount, 1, 2)}"></td>
+                                        <td>
+                                            <span class="badge badge-soft-warning" th:if="${f.status.name() == 'PENDING'}">Pending</span>
+                                            <span class="badge badge-soft-success" th:if="${f.status.name() == 'PAID'}">Paid</span>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(fines)}"><td colspan="3" class="text-center text-muted py-3">No fines.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">My Reservations</div>
+                            <div class="card-body p-0">
+                                <table class="table table-sm mb-0">
+                                    <thead><tr><th>Book</th><th>Reserved</th><th>Status</th></tr></thead>
+                                    <tbody>
+                                    <tr th:each="r : ${reservations}">
+                                        <td th:text="${r.book.title}"></td>
+                                        <td th:text="${#temporals.format(r.reservedAt, 'MMM dd')}"></td>
+                                        <td>
+                                            <span class="badge badge-soft-warning" th:if="${r.status.name() == 'PENDING'}">Pending</span>
+                                            <span class="badge badge-soft-success" th:if="${r.status.name() == 'FULFILLED'}">Fulfilled</span>
+                                            <span class="badge badge-soft-secondary" th:if="${r.status.name() == 'CANCELLED'}">Cancelled</span>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(reservations)}"><td colspan="3" class="text-center text-muted py-3">No reservations.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-3">
+                    <div class="card-header">My Reviews</div>
+                    <div class="card-body p-0">
+                        <table class="table table-sm mb-0">
+                            <thead><tr><th>Book</th><th>Rating</th><th>Comment</th></tr></thead>
+                            <tbody>
+                            <tr th:each="r : ${reviews}">
+                                <td th:text="${r.book.title}"></td>
+                                <td>
+                                    <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                        <i class="bi bi-star-fill text-warning" th:classappend="${i > r.rating} ? 'empty'"></i>
+                                    </span>
+                                </td>
+                                <td th:text="${r.comment}"></td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(reviews)}"><td colspan="3" class="text-center text-muted py-3">No reviews yet.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

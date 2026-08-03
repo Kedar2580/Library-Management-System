@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('Members', 'members', ~{::#content})}">
+    <div id="content">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <form class="d-flex gap-2" th:action="@{/members}" method="get">
+                <input type="text" name="q" class="form-control" style="width:300px"
+                       placeholder="Search by name, email, phone, ID..." th:value="${q}">
+                <button class="btn btn-outline-primary"><i class="bi bi-search"></i></button>
+            </form>
+            <div class="d-flex gap-2">
+                <a class="btn btn-primary" th:href="@{/auth/register}"><i class="bi bi-person-plus me-1"></i>Register Member</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead><tr><th>Membership No</th><th>Name</th><th>Email</th><th>Phone</th><th>Joined</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+                    <tbody>
+                    <tr th:each="m : ${members}">
+                        <td th:text="${m.membershipNo}"></td>
+                        <td class="fw-semibold" th:text="${m.fullName}"></td>
+                        <td th:text="${m.email}"></td>
+                        <td th:text="${m.phone}"></td>
+                        <td th:text="${m.joinedDate}"></td>
+                        <td>
+                            <span class="badge badge-soft-success" th:if="${m.membershipStatus.name() == 'ACTIVE'}">Active</span>
+                            <span class="badge badge-soft-warning" th:if="${m.membershipStatus.name() == 'INACTIVE'}">Inactive</span>
+                            <span class="badge badge-soft-danger" th:if="${m.membershipStatus.name() == 'SUSPENDED'}">Suspended</span>
+                        </td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-light" th:href="@{/members/{id}/profile(id=${m.id})}">
+                                <i class="bi bi-person-lines-fill"></i> Profile
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(members)}"><td colspan="7" class="text-center text-muted py-4">No members found.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

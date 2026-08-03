@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<div th:replace="~{fragments/layout :: shell('Dashboard', 'dashboard', ~{::#content})}">
+    <div id="content">
+
+        <div class="row g-3">
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-journal-richtext"></i></div>
+                    <div><div class="value" th:text="${totalBooks}">0</div><div class="label">Total Books</div></div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="icon bg-success bg-opacity-10 text-success"><i class="bi bi-check2-circle"></i></div>
+                    <div><div class="value" th:text="${availableBooks}">0</div><div class="label">Available Books</div></div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-arrow-up-right-square"></i></div>
+                    <div><div class="value" th:text="${issuedBooks}">0</div><div class="label">Issued Books</div></div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="icon bg-info bg-opacity-10 text-info"><i class="bi bi-people"></i></div>
+                    <div><div class="value" th:text="${totalMembers}">0</div><div class="label">Total Members</div></div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="icon bg-danger bg-opacity-10 text-danger"><i class="bi bi-exclamation-octagon"></i></div>
+                    <div><div class="value" th:text="${overdueBooks}">0</div><div class="label">Overdue Books</div></div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="icon bg-success bg-opacity-10 text-success"><i class="bi bi-cash-stack"></i></div>
+                    <div><div class="value" th:text="'$' + ${#numbers.formatDecimal(fineCollection, 1, 2)}">0</div><div class="label">Fine Collection</div></div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-cash"></i></div>
+                    <div><div class="value" th:text="'$' + ${#numbers.formatDecimal(pendingFineCollection, 1, 2)}">0</div><div class="label">Pending Fines</div></div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="icon bg-secondary bg-opacity-10 text-secondary"><i class="bi bi-calendar2-check"></i></div>
+                    <div><div class="value" th:text="${pendingReservations}">0</div><div class="label">Pending Reservations</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4 g-3">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">Books Issued - Last 7 Days</div>
+                    <div class="card-body">
+                        <canvas id="issueChart" height="90"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">Most Borrowed Books</div>
+                    <div class="card-body">
+                        <ol class="mb-0">
+                            <li th:each="row : ${topBooks}" class="mb-2">
+                                <span th:text="${row[0].title}"></span>
+                                <span class="badge bg-primary float-end" th:text="${row[1]} + 'x'"></span>
+                            </li>
+                            <li class="text-muted" th:if="${#lists.isEmpty(topBooks)}">No data yet.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4 g-3">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header"><i class="bi bi-clock-history me-1"></i>Recent Activities</div>
+                    <div class="card-body p-0">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead><tr><th>Time</th><th>Action</th><th>User</th></tr></thead>
+                            <tbody>
+                            <tr th:each="a : ${activities}">
+                                <td class="text-muted small" th:text="${#temporals.format(a.createdAt, 'MMM dd HH:mm')}"></td>
+                                <td th:text="${a.action}"></td>
+                                <td th:text="${a.username}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header text-danger"><i class="bi bi-exclamation-triangle me-1"></i>Overdue Books</div>
+                    <div class="card-body p-0">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead><tr><th>Book</th><th>Member</th><th>Due Date</th></tr></thead>
+                            <tbody>
+                            <tr class="overdue-row" th:each="i : ${overdueIssues}">
+                                <td th:text="${i.book.title}"></td>
+                                <td th:text="${i.member.fullName}"></td>
+                                <td th:text="${i.dueDate}"></td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(overdueIssues)}">
+                                <td colspan="3" class="text-center text-muted">No overdue books. Great job!</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script th:inline="javascript">
+            const labels = /*[[${chartLabels}]]*/ [];
+            const values = /*[[${chartValues}]]*/ [];
+            new Chart(document.getElementById('issueChart'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Books issued',
+                        data: values,
+                        borderColor: '#4f46e5',
+                        backgroundColor: 'rgba(79,70,229,0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: { maintainAspectRatio: false }
+            });
+        </script>
+    </div>
+</div>
+</body>
+</html>

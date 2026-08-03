@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<div th:replace="~{fragments/layout :: shell('Books', 'books', ~{::#content})}">
+    <div id="content">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <form class="d-flex gap-2" th:action="@{/books}" method="get">
+                <input type="text" name="q" class="form-control" style="width:300px"
+                       placeholder="Search books..." th:value="${q}">
+                <button class="btn btn-outline-primary"><i class="bi bi-search"></i></button>
+            </form>
+            <div class="d-flex gap-2">
+                <a class="btn btn-outline-success" th:href="@{/books/export}"><i class="bi bi-download me-1"></i>Export CSV</a>
+                <a class="btn btn-outline-danger" th:href="@{/reports/catalog/pdf}"><i class="bi bi-filetype-pdf me-1"></i>Catalog PDF</a>
+                <a class="btn btn-outline-info" th:href="@{/books/import}"><i class="bi bi-upload me-1"></i>Import CSV</a>
+                <a class="btn btn-primary" th:href="@{/books/new}"><i class="bi bi-plus-lg me-1"></i>Add Book</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead>
+                    <tr>
+                        <th>Title</th><th>Author</th><th>Category</th><th>ISBN</th>
+                        <th>Year</th><th>Copies</th><th>Available</th><th>Status</th>
+                        <th>Rating</th><th class="text-end">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="b : ${books}">
+                        <td>
+                            <a class="fw-semibold text-decoration-none" th:href="@{/books/{id}(id=${b.id})}" th:text="${b.title}">Title</a>
+                        </td>
+                        <td th:text="${b.author != null ? b.author.name : '-'}"></td>
+                        <td th:text="${b.category != null ? b.category.name : '-'}"></td>
+                        <td th:text="${b.isbn != null ? b.isbn : '-'}"></td>
+                        <td th:text="${b.publicationYear}"></td>
+                        <td th:text="${b.totalCopies}"></td>
+                        <td th:text="${b.availableCopies}"></td>
+                        <td>
+                            <span class="badge badge-soft-success" th:if="${b.available}">Available</span>
+                            <span class="badge badge-soft-danger" th:unless="${b.available}">Out of stock</span>
+                        </td>
+                        <td>
+                            <span class="star" th:text="${b.reviewCount > 0 ? #numbers.formatDecimal(b.avgRating, 1, 1) : '-'}"></span>
+                            <i class="bi bi-star-fill text-warning small" th:if="${b.reviewCount > 0}"></i>
+                        </td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-light" th:href="@{/books/{id}(id=${b.id})}"><i class="bi bi-eye"></i></a>
+                            <a class="btn btn-sm btn-light" th:href="@{/books/{id}/edit(id=${b.id})}"><i class="bi bi-pencil"></i></a>
+                            <form class="d-inline" th:action="@{/books/{id}/delete(id=${b.id})}" method="post"
+                                  onsubmit="return confirm('Delete this book?');">
+                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(books)}">
+                        <td colspan="10" class="text-center text-muted py-4">No books found.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

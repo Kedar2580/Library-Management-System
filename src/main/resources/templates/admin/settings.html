@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('System Settings', 'admin-settings', ~{::#content})}">
+    <div id="content">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="card">
+                    <div class="card-header"><i class="bi bi-gear me-1"></i>System Settings</div>
+                    <div class="card-body">
+                        <form th:action="@{/admin/settings}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">Library Name</label>
+                                <input type="text" name="setting_libraryName" class="form-control"
+                                       th:value="${settings['libraryName']}">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Loan Period (days)</label>
+                                    <input type="number" name="setting_loanPeriodDays" class="form-control"
+                                           th:value="${settings['loanPeriodDays']}" min="1">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Max Books per Member</label>
+                                    <input type="number" name="setting_maxBooksPerMember" class="form-control"
+                                           th:value="${settings['maxBooksPerMember']}" min="1">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Fine per Day ($)</label>
+                                    <input type="number" step="0.5" name="setting_finePerDay" class="form-control"
+                                           th:value="${settings['finePerDay']}" min="0">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Contact Email</label>
+                                    <input type="email" name="setting_contactEmail" class="form-control"
+                                           th:value="${settings['contactEmail']}">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Contact Phone</label>
+                                    <input type="text" name="setting_contactPhone" class="form-control"
+                                           th:value="${settings['contactPhone']}">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Library Address</label>
+                                <input type="text" name="setting_address" class="form-control"
+                                       th:value="${settings['address']}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Important Notices (shown on login portal)</label>
+                                <textarea name="setting_portalAnnouncement" class="form-control" rows="4"
+                                          th:text="${settings['portalAnnouncement']}"></textarea>
+                            </div>
+                            <button class="btn btn-primary">Save Settings</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

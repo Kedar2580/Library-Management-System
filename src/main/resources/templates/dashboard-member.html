@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('My Dashboard', 'dashboard', ~{::#content})}">
+    <div id="content">
+
+        <div class="row g-3">
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-journal-richtext"></i></div>
+                    <div><div class="value" th:text="${#lists.size(memberIssues)}">0</div><div class="label">My Issued Books</div></div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="icon bg-danger bg-opacity-10 text-danger"><i class="bi bi-exclamation-octagon"></i></div>
+                    <div>
+                        <div class="value" th:text="${memberOverdueCount}">0</div>
+                        <div class="label">Overdue Books</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="icon bg-success bg-opacity-10 text-success"><i class="bi bi-cash-stack"></i></div>
+                    <div><div class="value" th:text="'$' + ${#numbers.formatDecimal(memberPendingFineTotal, 1, 2)}">0</div><div class="label">Unpaid Fines</div></div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-calendar2-check"></i></div>
+                    <div><div class="value" th:text="${#lists.size(memberReservations)}">0</div><div class="label">My Reservations</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4 g-3">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header"><i class="bi bi-box-arrow-right me-1"></i>My Issued Books</div>
+                    <div class="card-body p-0">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead><tr><th>Book</th><th>Due Date</th><th>Status</th></tr></thead>
+                            <tbody>
+                            <tr th:each="i : ${memberIssues}">
+                                <td th:text="${i.book.title}"></td>
+                                <td th:text="${i.dueDate}"></td>
+                                <td>
+                                    <span class="badge bg-danger" th:if="${i.overdue}">Overdue</span>
+                                    <span class="badge bg-success" th:if="${!i.overdue}">On time</span>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(memberIssues)}">
+                                <td colspan="3" class="text-center text-muted py-4">No books currently issued.
+                                    <a class="ms-1" th:href="@{/search}">Browse the catalog</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header"><i class="bi bi-cash-stack me-1"></i>My Fines</div>
+                    <div class="card-body p-0">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead><tr><th>Reason</th><th>Amount</th><th>Status</th></tr></thead>
+                            <tbody>
+                            <tr th:each="f : ${memberFines}">
+                                <td th:text="${f.reason != null ? f.reason : '-'}"></td>
+                                <td th:text="'$' + ${#numbers.formatDecimal(f.amount, 1, 2)}"></td>
+                                <td>
+                                    <span class="badge bg-warning text-dark" th:if="${f.status.name() == 'PENDING'}">Pending</span>
+                                    <span class="badge bg-success" th:if="${f.status.name() == 'PAID'}">Paid</span>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(memberFines)}">
+                                <td colspan="3" class="text-center text-muted py-4">No fines on your account.</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4 g-3">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header"><i class="bi bi-calendar2-check me-1"></i>My Reservations</div>
+                    <div class="card-body p-0">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead><tr><th>Book</th><th>Reserved</th><th>Status</th></tr></thead>
+                            <tbody>
+                            <tr th:each="r : ${memberReservations}">
+                                <td th:text="${r.book.title}"></td>
+                                <td class="text-muted small" th:text="${#temporals.format(r.reservedAt, 'MMM dd yyyy')}"></td>
+                                <td th:text="${r.status.label}"></td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(memberReservations)}">
+                                <td colspan="3" class="text-center text-muted py-4">No reservations.</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header"><i class="bi bi-stars me-1"></i>Find Your Next Book</div>
+                    <div class="card-body d-flex flex-column">
+                        <p class="text-muted">Search the full catalog, borrow available books, and reserve titles that are out on loan.</p>
+                        <div class="mt-auto d-flex gap-2">
+                            <a class="btn btn-primary" th:href="@{/my/books}"><i class="bi bi-box-arrow-right me-1"></i>Borrow Books</a>
+                            <a class="btn btn-outline-secondary" th:href="@{/search}"><i class="bi bi-search me-1"></i>Search Catalog</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

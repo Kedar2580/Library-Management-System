@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<div th:replace="~{fragments/layout :: shell('Import Books', 'books', ~{::#content})}">
+    <div id="content">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header"><i class="bi bi-upload me-1"></i>Import Books from CSV</div>
+                    <div class="card-body">
+                        <p class="text-muted small">
+                            Expected columns: <code>title, isbn, author, category, publisher, year, totalCopies, shelfLocation</code>.
+                            You can use the <a th:href="@{/books/export}">Export CSV</a> file as a template.
+                            New authors, categories and publishers will be created automatically.
+                        </p>
+                        <form th:action="@{/books/import}" method="post" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <input type="file" name="file" class="form-control" accept=".csv" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Import</button>
+                            <a class="btn btn-secondary" th:href="@{/books}">Cancel</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

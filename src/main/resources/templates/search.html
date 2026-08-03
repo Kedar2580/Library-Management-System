@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('Search', 'search', ~{::#content})}">
+    <div id="content">
+        <div class="card mb-3">
+            <div class="card-body">
+                <form class="row g-2 align-items-end" th:action="@{/search}" method="get">
+                    <div class="col-md-4">
+                        <label class="form-label">Keyword</label>
+                        <input type="text" name="q" class="form-control" placeholder="Search books..." th:value="${q}">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Search by</label>
+                        <select name="by" class="form-select">
+                            <option value="all" th:selected="${by == 'all'}">All fields</option>
+                            <option value="title" th:selected="${by == 'title'}">Title</option>
+                            <option value="author" th:selected="${by == 'author'}">Author</option>
+                            <option value="isbn" th:selected="${by == 'isbn'}">ISBN</option>
+                            <option value="category" th:selected="${by == 'category'}">Category</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Category</label>
+                        <select name="categoryId" class="form-select">
+                            <option value="">All categories</option>
+                            <option th:each="c : ${categories}" th:value="${c.id}"
+                                    th:selected="${categoryId != null and categoryId == c.id}"
+                                    th:text="${c.name}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-check mt-4">
+                            <input class="form-check-input" type="checkbox" name="availableOnly" value="true"
+                                   th:checked="${availableOnly}">
+                            <label class="form-check-label">Available only</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary w-100"><i class="bi bi-search me-1"></i>Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted" th:text="${#lists.size(results)} + ' result(s)'"></span>
+        </div>
+        <div class="card">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead><tr><th>Title</th><th>Author</th><th>Category</th><th>ISBN</th><th>Available</th><th>Rating</th></tr></thead>
+                    <tbody>
+                    <tr th:each="b : ${results}">
+                        <td>
+                            <a class="fw-semibold text-decoration-none" th:href="@{/books/{id}(id=${b.id})}" th:text="${b.title}"></a>
+                        </td>
+                        <td th:text="${b.author != null ? b.author.name : '-'}"></td>
+                        <td th:text="${b.category != null ? b.category.name : '-'}"></td>
+                        <td th:text="${b.isbn != null ? b.isbn : '-'}"></td>
+                        <td>
+                            <span class="badge badge-soft-success" th:if="${b.available}">Available</span>
+                            <span class="badge badge-soft-danger" th:unless="${b.available}">Out of stock</span>
+                        </td>
+                        <td>
+                            <i class="bi bi-star-fill text-warning"></i>
+                            <span th:text="${b.reviewCount > 0 ? #numbers.formatDecimal(b.avgRating, 1, 1) : '-'}"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(results)}">
+                        <td colspan="6" class="text-center text-muted py-4">No books match your search.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
