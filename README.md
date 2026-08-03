@@ -1,3 +1,7 @@
+
+
+
+
 # Community Library Management System
 
 A full-featured web-based Library Management System built with **Spring Boot**, **Thymeleaf**, and **Spring Security**. Originally a JavaFX desktop app, now converted to a modern web application with separate **User** and **Staff** portals.
