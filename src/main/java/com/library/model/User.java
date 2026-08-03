@@ -36,6 +36,9 @@ public class User {
     private String phone;
     private String address;
 
+    @Column(columnDefinition = "TEXT")
+    private String profilePhoto;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;

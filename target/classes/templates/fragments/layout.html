@@ -33,6 +33,11 @@
                th:classappend="${active == 'my-books'} ? 'active'" th:href="@{/my/books}">
                 <i class="bi bi-box-arrow-right"></i> Borrow Books
             </a>
+            <a class="nav-link" sec:authorize="hasRole('MEMBER')"
+               th:classappend="${active == 'my-cart'} ? 'active'" th:href="@{/my/cart}">
+                <i class="bi bi-cart3"></i> My Cart
+                <span class="badge rounded-pill bg-primary ms-auto" th:if="${cartCount > 0}" th:text="${cartCount}">0</span>
+            </a>
             <a class="nav-link" th:classappend="${active == 'notifications'} ? 'active'" th:href="@{/notifications}">
                 <i class="bi bi-bell"></i> Notifications
                 <span class="badge rounded-pill bg-danger ms-auto" th:if="${unreadNotifications > 0}" th:text="${unreadNotifications}">0</span>

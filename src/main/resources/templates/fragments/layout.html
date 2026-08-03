@@ -33,6 +33,11 @@
                th:classappend="${active == 'my-books'} ? 'active'" th:href="@{/my/books}">
                 <i class="bi bi-box-arrow-right"></i> Borrow Books
             </a>
+            <a class="nav-link" sec:authorize="hasRole('MEMBER')"
+               th:classappend="${active == 'my-cart'} ? 'active'" th:href="@{/my/cart}">
+                <i class="bi bi-cart3"></i> My Cart
+                <span class="badge rounded-pill bg-primary ms-auto" th:if="${cartCount > 0}" th:text="${cartCount}">0</span>
+            </a>
             <a class="nav-link" th:classappend="${active == 'notifications'} ? 'active'" th:href="@{/notifications}">
                 <i class="bi bi-bell"></i> Notifications
                 <span class="badge rounded-pill bg-danger ms-auto" th:if="${unreadNotifications > 0}" th:text="${unreadNotifications}">0</span>
@@ -163,8 +168,10 @@
                 </div>
 
                 <div class="dropdown">
-                    <button class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-person-circle me-1"></i>
+                    <button class="btn btn-light dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img th:if="${currentUser != null and currentUser.profilePhoto != null}" th:src="${currentUser.profilePhoto}"
+                             alt="" class="rounded-circle object-fit-cover" style="width:28px;height:28px;">
+                        <i th:unless="${currentUser != null and currentUser.profilePhoto != null}" class="bi bi-person-circle me-1"></i>
                         <span th:text="${currentUser != null ? currentUser.fullName : ''}"></span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow">

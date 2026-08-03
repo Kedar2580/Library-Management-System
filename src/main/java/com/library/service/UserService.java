@@ -70,6 +70,12 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User updateProfilePhoto(Long id, String dataUri) {
+        User user = userRepository.findById(id).orElseThrow();
+        user.setProfilePhoto(dataUri);
+        return userRepository.save(user);
+    }
+
     public void changePassword(User user, String newPassword) {
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setResetToken(null);
@@ -138,7 +144,6 @@ public class UserService {
     public boolean isUsernameTaken(String username) {
         return userRepository.existsByUsername(username);
     }
-
     public boolean isEmailTaken(String email) {
         return userRepository.existsByEmail(email);
     }

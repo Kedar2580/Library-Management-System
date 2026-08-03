@@ -58,8 +58,10 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .userDetailsService(userDetailsService)
+                .csrf(csrf -> csrf.ignoringRequestMatchers(
+                        new AntPathRequestMatcher("/auth/logout", "POST")))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/css/**", "/js/**", "/images/**",
+                        .requestMatchers("/", "/home", "/auth/**", "/css/**", "/js/**", "/images/**",
                                 "/webjars/**", "/favicon.ico", "/error", "/h2-console/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/books/new", "/books/*/edit", "/books/*/delete",
@@ -80,7 +82,8 @@ public class SecurityConfig {
                         .logoutRequestMatcher(new AntPathRequestMatcher("/auth/logout", "POST"))
                         .logoutSuccessUrl("/auth/login?logout")
                         .permitAll())
-                .exceptionHandling(ex -> ex.accessDeniedPage("/auth/access-denied"))
+                .exceptionHandling(ex -> ex.accessDeniedHandler((request, response, e) ->
+                        response.sendRedirect("/auth/access-denied")))
                 .headers(headers -> headers.frameOptions(fo -> fo.sameOrigin()));
 
         return http.build();

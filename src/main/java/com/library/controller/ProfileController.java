@@ -11,7 +11,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.io.IOException;
+import java.util.Base64;
 
 @Controller
 @RequestMapping("/profile")
@@ -48,6 +52,33 @@ public class ProfileController {
         User user = SecurityUtil.currentUser();
         userService.updateProfile(user.getId(), fullName, phone, email, address);
         ra.addFlashAttribute("success", "Profile updated.");
+        return "redirect:/profile";
+    }
+
+    @PostMapping("/photo")
+    public String uploadPhoto(@RequestParam("photo") MultipartFile photo,
+                              RedirectAttributes ra) {
+        if (photo.isEmpty()) {
+            ra.addFlashAttribute("error", "Please choose an image file.");
+            return "redirect:/profile";
+        }
+        String contentType = photo.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            ra.addFlashAttribute("error", "Only image files are allowed.");
+            return "redirect:/profile";
+        }
+        if (photo.getSize() > 5 * 1024 * 1024) {
+            ra.addFlashAttribute("error", "Image must be 5 MB or smaller.");
+            return "redirect:/profile";
+        }
+        try {
+            String dataUri = "data:" + contentType + ";base64,"
+                    + Base64.getEncoder().encodeToString(photo.getBytes());
+            userService.updateProfilePhoto(SecurityUtil.currentUser().getId(), dataUri);
+            ra.addFlashAttribute("success", "Profile photo updated.");
+        } catch (IOException e) {
+            ra.addFlashAttribute("error", "Could not read the uploaded image.");
+        }
         return "redirect:/profile";
     }
 }

@@ -6,12 +6,14 @@
 /Users/macbook/Movies/LIB/src/main/java/com/library/controller/AuthController.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/controller/AuthorController.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/controller/BookController.java
+/Users/macbook/Movies/LIB/src/main/java/com/library/controller/CartController.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/controller/CategoryController.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/controller/CirculationController.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/controller/DashboardController.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/controller/FeedbackController.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/controller/FinesController.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/controller/HelpController.java
+/Users/macbook/Movies/LIB/src/main/java/com/library/controller/HomeController.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/controller/IssuesController.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/controller/MemberController.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/controller/MyBooksController.java
@@ -27,6 +29,7 @@
 /Users/macbook/Movies/LIB/src/main/java/com/library/model/Author.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/model/Book.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/model/BookIssue.java
+/Users/macbook/Movies/LIB/src/main/java/com/library/model/CartItem.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/model/Category.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/model/Fine.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/model/FineStatus.java
@@ -49,6 +52,7 @@
 /Users/macbook/Movies/LIB/src/main/java/com/library/repository/AuthorRepository.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/repository/BookIssueRepository.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/repository/BookRepository.java
+/Users/macbook/Movies/LIB/src/main/java/com/library/repository/CartItemRepository.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/repository/CategoryRepository.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/repository/FineRepository.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/repository/MessageRepository.java
@@ -65,6 +69,7 @@
 /Users/macbook/Movies/LIB/src/main/java/com/library/service/ActivityService.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/service/BackupService.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/service/BookService.java
+/Users/macbook/Movies/LIB/src/main/java/com/library/service/CartService.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/service/CirculationService.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/service/CsvService.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/service/EngagementService.java

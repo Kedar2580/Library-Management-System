@@ -7,12 +7,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
 
     boolean existsByIsbn(String isbn);
 
     boolean existsByTitleIgnoreCase(String title);
+
+    Optional<Book> findTopByOrderByAvgRatingDescReviewCountDesc();
 
     List<Book> findByCategory(Category category);
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 <div th:replace="~{fragments/layout :: shell('Search', 'search', ~{::#content})}">
     <div id="content">
@@ -49,9 +50,15 @@
         <div class="card">
             <div class="card-body p-0">
                 <table class="table table-hover mb-0 align-middle">
-                    <thead><tr><th>Title</th><th>Author</th><th>Category</th><th>ISBN</th><th>Available</th><th>Rating</th></tr></thead>
+                    <thead><tr><th></th><th>Title</th><th>Author</th><th>Category</th><th>ISBN</th><th>Available</th><th>Rating</th><th class="text-end">Action</th></tr></thead>
                     <tbody>
                     <tr th:each="b : ${results}">
+                        <td style="width:56px">
+                            <img class="book-thumb"
+                                 th:src="@{/images/covers/{isbn}.jpg(isbn=${b.isbn})}"
+                                 onerror="this.onerror=null;this.src='/images/book-cover.svg';"
+                                 alt="Cover">
+                        </td>
                         <td>
                             <a class="fw-semibold text-decoration-none" th:href="@{/books/{id}(id=${b.id})}" th:text="${b.title}"></a>
                         </td>
@@ -66,9 +73,17 @@
                             <i class="bi bi-star-fill text-warning"></i>
                             <span th:text="${b.reviewCount > 0 ? #numbers.formatDecimal(b.avgRating, 1, 1) : '-'}"></span>
                         </td>
+                        <td class="text-end">
+                            <form sec:authorize="hasRole('MEMBER')" th:action="@{/my/cart/add}" method="post" class="d-inline-block">
+                                <input type="hidden" name="bookId" th:value="${b.id}">
+                                <button class="btn btn-sm btn-outline-dark" th:disabled="${!b.available}">
+                                    <i class="bi bi-cart-plus me-1"></i>Add to Cart
+                                </button>
+                            </form>
+                        </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(results)}">
-                        <td colspan="6" class="text-center text-muted py-4">No books match your search.</td>
+                        <td colspan="8" class="text-center text-muted py-4">No books match your search.</td>
                     </tr>
                     </tbody>
                 </table>

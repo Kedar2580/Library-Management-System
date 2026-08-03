@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('My Cart', 'my-cart', ~{::#content})}">
+    <div id="content">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted">
+                <i class="bi bi-cart3 me-1"></i>
+                <span class="fw-semibold" th:text="${#lists.size(cartBooks)}"></span> book(s) in your cart
+            </span>
+            <form th:action="@{/my/cart/clear}" method="post" th:if="${!#lists.isEmpty(cartBooks)}">
+                <button class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-trash me-1"></i>Clear Cart
+                </button>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><i class="bi bi-cart3 me-1"></i>Books Ready to Borrow</div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead><tr><th></th><th>Title</th><th>Author</th><th>Category</th><th>Copies</th><th class="text-end">Action</th></tr></thead>
+                    <tbody>
+                    <tr th:each="b : ${cartBooks}">
+                        <td style="width:64px">
+                            <img class="book-thumb"
+                                 th:src="@{/images/covers/{isbn}.jpg(isbn=${b.isbn})}"
+                                 onerror="this.onerror=null;this.src='/images/book-cover.svg';"
+                                 alt="Cover">
+                        </td>
+                        <td>
+                            <a class="fw-semibold text-decoration-none" th:href="@{/books/{id}(id=${b.id})}" th:text="${b.title}"></a>
+                            <div class="small text-muted" th:text="${b.publicationYear != null ? b.publicationYear : ''}"></div>
+                        </td>
+                        <td th:text="${b.author != null ? b.author.name : '-'}"></td>
+                        <td th:text="${b.category != null ? b.category.name : '-'}"></td>
+                        <td th:text="${b.availableCopies}"></td>
+                        <td class="text-end">
+                            <form th:action="@{/my/cart/remove}" method="post">
+                                <input type="hidden" name="bookId" th:value="${b.id}">
+                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-x-lg me-1"></i>Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(cartBooks)}">
+                        <td colspan="6" class="text-center text-muted py-5">
+                            <i class="bi bi-cart-x display-6 d-block mb-2"></i>
+                            Your cart is empty.
+                            <a class="d-block mt-2" th:href="@{/my/books}">Browse books to borrow</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end mt-3" th:if="${!#lists.isEmpty(cartBooks)}">
+            <form th:action="@{/my/cart/checkout}" method="post"
+                  onsubmit="return confirm('Borrow all ' + ${#lists.size(cartBooks)} + ' book(s) in your cart?');">
+                <button class="btn btn-success btn-lg px-4">
+                    <i class="bi bi-box-arrow-right me-2"></i>Borrow All (Checkout)
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

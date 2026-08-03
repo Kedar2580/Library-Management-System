@@ -1,6 +1,7 @@
 package com.library.controller;
 
 import com.library.model.Book;
+import com.library.model.BookIssue;
 import com.library.model.Reservation;
 import com.library.model.ReservationStatus;
 import com.library.model.Role;
@@ -9,6 +10,7 @@ import com.library.security.SecurityUtil;
 import com.library.service.BookService;
 import com.library.service.CirculationService;
 import com.library.service.SettingsService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -92,6 +94,38 @@ public class MyBooksController {
         circulationService.cancelReservation(id);
         ra.addFlashAttribute("success", "Reservation cancelled.");
         return "redirect:/my/books";
+    }
+
+    @PostMapping("/{issueId}/return")
+    public String returnBook(@PathVariable Long issueId, HttpServletRequest request, RedirectAttributes ra) {
+        User member = currentMember();
+        if (member == null) {
+            return "redirect:/auth/member-login";
+        }
+        BookIssue issue = circulationService.getIssue(issueId);
+        if (issue == null || !issue.getMember().getId().equals(member.getId())) {
+            ra.addFlashAttribute("error", "That book is not in your borrowed list.");
+            return samePageRedirect(request, "/my/books");
+        }
+        CirculationService.ReturnResult result = circulationService.returnBook(issueId);
+        if (result.success()) {
+            ra.addFlashAttribute("success", result.message());
+        } else {
+            ra.addFlashAttribute("error", result.message());
+        }
+        return samePageRedirect(request, "/my/books");
+    }
+
+    private String samePageRedirect(HttpServletRequest request, String fallback) {
+        String referer = request.getHeader("Referer");
+        if (referer != null && !referer.isBlank()) {
+            String base = request.getRequestURL().toString()
+                    .replace(request.getRequestURI(), "");
+            if (referer.startsWith(base)) {
+                return "redirect:" + referer;
+            }
+        }
+        return "redirect:" + fallback;
     }
 
     private User currentMember() {

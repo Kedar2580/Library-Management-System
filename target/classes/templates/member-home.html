@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('Borrow a Book', 'my-books', ~{::#content})}">
+    <div id="content">
+
+        <div class="card mb-4">
+            <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div>
+                    <h4 class="mb-1">
+                        <i class="bi bi-emoji-smile me-1"></i>Welcome back, <span th:text="${currentUser.fullName}"></span>!
+                    </h4>
+                    <p class="text-muted mb-0">Browse the library below, add books to your cart and borrow them all at checkout.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a class="btn btn-dark position-relative" th:href="@{/my/cart}">
+                        <i class="bi bi-cart3 me-1"></i>My Cart
+                        <span class="badge rounded-pill bg-danger ms-1" th:if="${cartCount > 0}" th:text="${cartCount}">0</span>
+                    </a>
+                    <a class="btn btn-outline-dark" th:href="@{/my/books}">
+                        <i class="bi bi-journal-text me-1"></i>My Borrowed
+                        <span class="badge rounded-pill bg-secondary ms-1" th:text="${#lists.size(myIssues)}">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-end mb-3">
+            <div>
+                <h2 class="fw-bold mb-0">Borrow a Book</h2>
+                <p class="text-muted mb-0" th:text="${#lists.size(books)} + ' books available right now.'">Available</p>
+            </div>
+        </div>
+
+        <div class="row g-3" th:if="${books != null}">
+            <div class="col-6 col-md-3 col-lg-3" th:each="b : ${books}">
+                <div class="card home-book-card h-100">
+                    <div class="home-book-cover">
+                        <img th:src="@{/images/covers/{isbn}.jpg(isbn=${b.isbn})}"
+                             onerror="this.onerror=null;this.src='/images/book-cover.svg';"
+                             alt="Cover">
+                    </div>
+                    <div class="card-body p-2 d-flex flex-column">
+                        <div class="home-book-title" th:text="${b.title}">Title</div>
+                        <div class="small text-muted text-truncate" th:text="${b.author != null ? b.author.name : ''}">Author</div>
+                        <div class="d-flex align-items-center gap-1 mt-1">
+                            <i class="bi bi-star-fill text-warning small"></i>
+                            <span class="small fw-semibold"
+                                  th:text="${b.reviewCount > 0 ? #numbers.formatDecimal(b.avgRating, 1, 1) : 'New'}"></span>
+                            <span class="small text-muted" th:if="${b.reviewCount > 0}" th:text="'(' + ${b.reviewCount} + ')'"></span>
+                        </div>
+                        <div class="mt-auto pt-2 d-flex gap-1">
+                            <form th:action="@{/my/cart/add}" method="post" class="flex-grow-1">
+                                <input type="hidden" name="bookId" th:value="${b.id}">
+                                <button class="btn btn-sm btn-dark w-100"><i class="bi bi-cart-plus me-1"></i>Cart</button>
+                            </form>
+                            <form th:action="@{/my/books/{id}/borrow(id=${b.id})}" method="post" class="flex-grow-1">
+                                <button class="btn btn-sm btn-primary w-100"><i class="bi bi-plus-lg me-1"></i>Borrow</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-center text-muted py-5" th:if="${books != null and #lists.isEmpty(books)}">
+            <i class="bi bi-inbox display-5 d-block mb-2"></i>
+            No books are available right now. Check back soon.
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <i class="bi bi-journal-text me-1"></i>My Borrowed Books
+                <span class="badge rounded-pill bg-secondary ms-1" th:text="${#lists.size(myIssues)}">0</span>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead><tr><th>Book</th><th>Borrowed</th><th>Due Date</th><th>Status</th><th class="text-end">Action</th></tr></thead>
+                    <tbody>
+                    <tr th:each="i : ${myIssues}">
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img class="book-thumb"
+                                     th:src="@{/images/covers/{isbn}.jpg(isbn=${i.book.isbn})}"
+                                     onerror="this.onerror=null;this.src='/images/book-cover.svg';"
+                                     alt="Cover">
+                                <span class="fw-semibold" th:text="${i.book.title}">Title</span>
+                            </div>
+                        </td>
+                        <td class="text-muted small" th:text="${#temporals.format(i.issueDate, 'MMM dd yyyy')}"></td>
+                        <td class="small" th:text="${#temporals.format(i.dueDate, 'MMM dd yyyy')}"></td>
+                        <td>
+                            <span class="badge bg-danger" th:if="${i.overdue}">Overdue</span>
+                            <span class="badge bg-success" th:if="${!i.overdue}">On time</span>
+                        </td>
+                        <td class="text-end">
+                            <form th:action="@{/my/books/{id}/return(id=${i.id})}" method="post" class="d-inline-block">
+                                <button class="btn btn-sm btn-outline-dark"><i class="bi bi-arrow-return-left me-1"></i>Return</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(myIssues)}">
+                        <td colspan="5" class="text-center text-muted py-4">
+                            You have no books borrowed right now.
+                            <a class="d-block mt-1" th:href="@{/my/books}">Browse books to borrow</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

@@ -23,13 +23,19 @@
                 <table class="table table-hover mb-0 align-middle">
                     <thead>
                     <tr>
-                        <th>Title</th><th>Author</th><th>Category</th><th>ISBN</th>
+                        <th></th><th>Title</th><th>Author</th><th>Category</th><th>ISBN</th>
                         <th>Year</th><th>Copies</th><th>Available</th><th>Status</th>
                         <th>Rating</th><th class="text-end">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="b : ${books}">
+                        <td style="width:56px">
+                            <img class="book-thumb"
+                                 th:src="@{/images/covers/{isbn}.jpg(isbn=${b.isbn})}"
+                                 onerror="this.onerror=null;this.src='/images/book-cover.svg';"
+                                 alt="Cover">
+                        </td>
                         <td>
                             <a class="fw-semibold text-decoration-none" th:href="@{/books/{id}(id=${b.id})}" th:text="${b.title}">Title</a>
                         </td>
@@ -57,7 +63,7 @@
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(books)}">
-                        <td colspan="10" class="text-center text-muted py-4">No books found.</td>
+                        <td colspan="11" class="text-center text-muted py-4">No books found.</td>
                     </tr>
                     </tbody>
                 </table>

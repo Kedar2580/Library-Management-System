@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="180" viewBox="0 0 120 180">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4f46e5"/>
+      <stop offset="1" stop-color="#312e81"/>
+    </linearGradient>
+  </defs>
+  <rect width="120" height="180" rx="8" fill="url(#g)"/>
+  <g fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M28 42 H68 A12 12 0 0 1 80 54 V128 A12 12 0 0 0 68 116 H28 Z"/>
+    <path d="M92 42 H52 A12 12 0 0 0 40 54 V128 A12 12 0 0 1 52 116 H92 Z"/>
+  </g>
+  <text x="60" y="152" text-anchor="middle" font-size="13" fill="rgba(255,255,255,0.6)" font-family="Arial,sans-serif">Community Library</text>
+</svg>

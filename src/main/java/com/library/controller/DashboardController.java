@@ -23,11 +23,6 @@ public class DashboardController {
         this.circulationService = circulationService;
     }
 
-    @GetMapping("/")
-    public String home() {
-        return "redirect:/dashboard";
-    }
-
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
         User currentUser = SecurityUtil.currentUser();
