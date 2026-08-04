@@ -59,7 +59,7 @@ If Java is not installed: `brew install openjdk@21`
 
 ## Deploy to Vercel
 
-Vercel can run this Spring Boot app as a **Docker** deployment (the root `Dockerfile` builds and runs the packaged jar). There is no JVM on Vercel's Node runtime, so the app ships as a container via the `Dockerfile`.
+Vercel runs this Spring Boot app as a **container** from the root `Dockerfile.vercel` (Vercel's Docker detection requires that filename). Vercel sends traffic to the `PORT` env var (default 80); Spring reads it via `server.port=${PORT:8080}`.
 
 ### 1. Push the project to a Git repository
 
@@ -76,8 +76,8 @@ git commit -m "Initial commit"
 ### 2. Import the repo in Vercel
 
 1. Go to **vercel.com** → **New Project** → import your repository.
-2. Vercel auto-detects the `Dockerfile` (deployment type **Docker**).
-3. The container listens on the `PORT` env var that Vercel injects (Spring reads `${PORT:8080}`).
+2. Vercel auto-detects `Dockerfile.vercel` and builds the container.
+3. The container must listen on `PORT` — Vercel injects it (the Dockerfile defaults to 80).
 
 ### 3. (Optional) Persistent database
 
@@ -91,7 +91,7 @@ The default (local development) URL is `jdbc:h2:file:./data/library;AUTO_SERVER=
 
 ### 4. Deploy
 
-Vercel builds the image from the `Dockerfile` and serves it on a Vercel URL. Default logins after first boot: `admin/admin123`, `librarian/lib123`, `alice/alice123`, `bob/bob123`, `carol/carol123`.
+Vercel builds the image from `Dockerfile.vercel` and serves it on a Vercel URL. Default logins after first boot: `admin/admin123`, `librarian/lib123`, `alice/alice123`, `bob/bob123`, `carol/carol123`.
 
 ### Build locally into a jar (same as the Docker build)
 
