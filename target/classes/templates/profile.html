@@ -7,11 +7,19 @@
             <div class="col-lg-4">
                 <div class="card">
                     <div class="card-body text-center">
-                        <i class="bi bi-person-circle text-primary" style="font-size:4rem;"></i>
+                        <div class="position-relative d-inline-block">
+                            <img th:if="${user.profilePhoto != null}" th:src="${user.profilePhoto}"
+                                 alt="Profile photo" class="rounded-circle object-fit-cover border" style="width:96px;height:96px;">
+                            <i th:unless="${user.profilePhoto != null}" class="bi bi-person-circle text-primary" style="font-size:6rem;"></i>
+                        </div>
                         <h4 class="mt-2" th:text="${user.fullName}"></h4>
                         <p class="text-muted mb-0" th:text="'@' + ${user.username}"></p>
                         <span class="badge badge-soft-primary" th:text="${user.role.label}"></span>
                         <hr>
+                        <form th:action="@{/profile/photo}" method="post" enctype="multipart/form-data" class="mb-1">
+                            <input type="file" name="photo" accept="image/*" class="form-control form-control-sm mb-2" required>
+                            <button class="btn btn-sm btn-outline-primary w-100"><i class="bi bi-camera me-1"></i>Change Photo</button>
+                        </form>
                         <table class="table table-sm text-start mb-0">
                             <tr><th class="text-muted">Email</th><td th:text="${user.email}"></td></tr>
                             <tr><th class="text-muted">Phone</th><td th:text="${user.phone != null ? user.phone : '-'}"></td></tr>

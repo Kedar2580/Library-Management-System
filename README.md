@@ -57,6 +57,51 @@ If Java is not installed: `brew install openjdk@21`
 
 ---
 
+## Deploy to Vercel
+
+Vercel can run this Spring Boot app as a **Docker** deployment (the root `Dockerfile` builds and runs the packaged jar). There is no JVM on Vercel's Node runtime, so the app ships as a container via the `Dockerfile`.
+
+### 1. Push the project to a Git repository
+
+The app must live in a Git repo (GitHub / GitLab / Bitbucket) so Vercel can import it.
+
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+```
+
+> `.gitignore` already excludes `target/`, `data/` (the local H2 database), `backups/`, etc.
+
+### 2. Import the repo in Vercel
+
+1. Go to **vercel.com** → **New Project** → import your repository.
+2. Vercel auto-detects the `Dockerfile` (deployment type **Docker**).
+3. The container listens on the `PORT` env var that Vercel injects (Spring reads `${PORT:8080}`).
+
+### 3. (Optional) Persistent database
+
+Vercel's filesystem is **ephemeral** — an H2 file DB resets per instance/warmup, though `DataSeeder` repopulates initial books, categories, and accounts on a fresh DB. For durable data, set a project environment variable pointing at a managed database or an instance-specific store, for example:
+
+```
+LIBRARY_DB_URL=jdbc:h2:file:/tmp/library/data
+```
+
+The default (local development) URL is `jdbc:h2:file:./data/library;AUTO_SERVER=TRUE`.
+
+### 4. Deploy
+
+Vercel builds the image from the `Dockerfile` and serves it on a Vercel URL. Default logins after first boot: `admin/admin123`, `librarian/lib123`, `alice/alice123`, `bob/bob123`, `carol/carol123`.
+
+### Build locally into a jar (same as the Docker build)
+
+```bash
+mvn -q -DskipTests package
+java -jar target/library-management-1.0.0.jar
+```
+
+---
+
 ## How to Open the Project From the Start
 
 ### 1. Clone / open the project
