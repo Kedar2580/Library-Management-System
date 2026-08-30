@@ -26,8 +26,18 @@ public class CartService {
         return items(member).stream().map(item -> item.getBook().getId()).toList();
     }
 
+    public static final int MAX_CART_ITEMS = 3;
+
     public int size(User member) {
         return (int) cartItemRepository.countByMember(member);
+    }
+
+    public boolean isFull(User member) {
+        return size(member) >= MAX_CART_ITEMS;
+    }
+
+    public int remaining(User member) {
+        return Math.max(0, MAX_CART_ITEMS - size(member));
     }
 
     @Transactional

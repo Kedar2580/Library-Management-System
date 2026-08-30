@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{fragments/layout :: shell('My Fines', 'my-fines', ~{::#content})}">
+    <div id="content">
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-4 col-sm-6">
+                <div class="stat-card">
+                    <div class="icon bg-danger bg-opacity-10 text-danger"><i class="bi bi-cash-stack"></i></div>
+                    <div><div class="value" th:text="'$' + ${#numbers.formatDecimal(pendingTotal, 1, 2)}">0.00</div><div class="label">Unpaid Fines</div></div>
+                </div>
+            </div>
+            <div class="col-md-8 col-sm-6">
+                <div class="card h-100 border-0 bg-light">
+                    <div class="card-body d-flex align-items-center">
+                        <p class="text-muted mb-0">
+                            Pay your outstanding fines online. Select the fines you want to clear,
+                            choose a payment method and enter a receipt / transaction reference.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form th:action="@{/my/fines/pay}" method="post">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-receipt me-1"></i>My Fines</span>
+                    <span class="text-danger fw-semibold">
+                        Selected: <span id="selectedCount">0</span> |
+                        Total: $<span id="selectedTotal">0.00</span>
+                    </span>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead>
+                        <tr>
+                            <th style="width:36px"><input class="form-check-input" type="checkbox" id="checkAll"></th>
+                            <th>Reason</th><th>Book</th><th>Date</th><th class="text-end">Amount</th><th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="f : ${memberFines}" class="fine-row" data-amount="${f.amount}">
+                            <td>
+                                <input class="form-check-input fine-check" type="checkbox" name="fineIds"
+                                       th:value="${f.id}"
+                                       th:disabled="${f.status.name() != 'PENDING'}">
+                            </td>
+                            <td th:text="${f.reason != null ? f.reason : '-'}"></td>
+                            <td th:text="${f.issue != null ? f.issue.book.title : '-'}"></td>
+                            <td class="text-muted small" th:text="${f.createdAt.toLocalDate()}"></td>
+                            <td class="text-end fw-semibold" th:text="'$' + ${#numbers.formatDecimal(f.amount, 1, 2)}"></td>
+                            <td>
+                                <span class="badge bg-warning text-dark" th:if="${f.status.name() == 'PENDING'}">Pending</span>
+                                <span class="badge bg-success" th:if="${f.status.name() == 'PAID'}">Paid</span>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(memberFines)}">
+                            <td colspan="6" class="text-center text-muted py-5">
+                                <i class="bi bi-emoji-smile display-6 d-block mb-2"></i>
+                                You have no fines on your account.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card mt-3" th:if="${!#lists.isEmpty(memberFines)}">
+                <div class="card-header"><i class="bi bi-credit-card me-1"></i>Payment Details</div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Payment Method</label>
+                            <select name="paymentMethod" class="form-select" required>
+                                <option value="CASH">Cash</option>
+                                <option value="CARD">Card</option>
+                                <option value="ONLINE">Online</option>
+                                <option value="OTHER">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label">Receipt / Reference No.</label>
+                            <input type="text" name="reference" class="form-control"
+                                   placeholder="e.g. UPI123456, card last 4 digits">
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-success w-100" id="payButton">
+                                <i class="bi bi-cash-coin me-1"></i>Pay Selected Fines
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const rows = document.querySelectorAll('.fine-row');
+        const checkAll = document.getElementById('checkAll');
+        const count = document.getElementById('selectedCount');
+        const total = document.getElementById('selectedTotal');
+        const payButton = document.getElementById('payButton');
+
+        function refresh() {
+            let c = 0, t = 0;
+            rows.forEach(row => {
+                const cb = row.querySelector('.fine-check');
+                if (cb && cb.checked && !cb.disabled) {
+                    c++;
+                    t += parseFloat(row.dataset.amount || 0);
+                }
+            });
+            count.textContent = c;
+            total.textContent = t.toFixed(2);
+            if (payButton) payButton.disabled = c === 0;
+        }
+
+        rows.forEach(row => {
+            const cb = row.querySelector('.fine-check');
+            if (cb) cb.addEventListener('change', refresh);
+        });
+        if (checkAll) {
+            checkAll.addEventListener('change', function () {
+                rows.forEach(row => {
+                    const cb = row.querySelector('.fine-check');
+                    if (cb && !cb.disabled) cb.checked = checkAll.checked;
+                });
+                refresh();
+            });
+        }
+        refresh();
+    });
+</script>
+</body>
+</html>

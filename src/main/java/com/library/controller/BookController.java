@@ -23,12 +23,15 @@ public class BookController {
     private final BookService bookService;
     private final CsvService csvService;
     private final EngagementService engagementService;
+    private final com.library.service.RatingSyncService ratingSyncService;
 
     public BookController(BookService bookService, CsvService csvService,
-                          EngagementService engagementService) {
+                          EngagementService engagementService,
+                          com.library.service.RatingSyncService ratingSyncService) {
         this.bookService = bookService;
         this.csvService = csvService;
         this.engagementService = engagementService;
+        this.ratingSyncService = ratingSyncService;
     }
 
     @GetMapping
@@ -144,6 +147,17 @@ public class BookController {
             ra.addFlashAttribute("success", "Imported " + imported + " books.");
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Import failed: " + e.getMessage());
+        }
+        return "redirect:/books";
+    }
+
+    @PostMapping("/ratings/sync")
+    public String syncRatings(RedirectAttributes ra) {
+        try {
+            String result = ratingSyncService.syncAll();
+            ra.addFlashAttribute("success", result);
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "Rating sync failed: " + e.getMessage());
         }
         return "redirect:/books";
     }

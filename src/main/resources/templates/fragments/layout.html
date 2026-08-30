@@ -38,6 +38,10 @@
                 <i class="bi bi-cart3"></i> My Cart
                 <span class="badge rounded-pill bg-primary ms-auto" th:if="${cartCount > 0}" th:text="${cartCount}">0</span>
             </a>
+            <a class="nav-link" sec:authorize="hasRole('MEMBER')"
+               th:classappend="${active == 'my-fines'} ? 'active'" th:href="@{/my/fines}">
+                <i class="bi bi-cash-stack"></i> My Fines
+            </a>
             <a class="nav-link" th:classappend="${active == 'notifications'} ? 'active'" th:href="@{/notifications}">
                 <i class="bi bi-bell"></i> Notifications
                 <span class="badge rounded-pill bg-danger ms-auto" th:if="${unreadNotifications > 0}" th:text="${unreadNotifications}">0</span>

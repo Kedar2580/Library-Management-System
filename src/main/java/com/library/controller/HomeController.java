@@ -39,6 +39,14 @@ public class HomeController {
         this.circulationService = circulationService;
     }
 
+    private static final List<String> WORLD_BESTSELLERS = List.of(
+            "Don Quixote", "A Tale of Two Cities", "The Little Prince", "The Alchemist",
+            "Harry Potter and the Sorcerer's Stone", "The Hobbit", "The Da Vinci Code",
+            "The Catcher in the Rye", "One Hundred Years of Solitude", "The Great Gatsby",
+            "Think and Grow Rich", "How to Win Friends and Influence People",
+            "The 7 Habits of Highly Effective People", "Atomic Habits", "The Secret",
+            "Mindset: The New Psychology of Success");
+
     @GetMapping({"/", "/home"})
     public String home(@RequestParam(required = false) String q, Model model) {
         User user = SecurityUtil.currentUser();
@@ -49,7 +57,7 @@ public class HomeController {
         if (StringUtils.hasText(q)) {
             books = bookService.search(q.trim());
         } else {
-            books = mostBorrowed(4);
+            books = topSelling(4);
         }
         model.addAttribute("books", books);
         model.addAttribute("q", q);
@@ -75,17 +83,27 @@ public class HomeController {
         return counts;
     }
 
-    private List<Book> mostBorrowed(int limit) {
-        Map<Book, Long> counts = borrowCounts();
-        if (!counts.isEmpty()) {
-            return counts.entrySet().stream()
-                    .sorted(Map.Entry.<Book, Long>comparingByValue().reversed())
-                    .limit(limit)
-                    .map(Map.Entry::getKey)
-                    .toList();
+    /**
+     * Returns the world's top-selling books from the catalog, shuffled into a
+     * different order on every visit so the home page always feels fresh.
+     */
+    private List<Book> topSelling(int limit) {
+        List<Book> bestsellers = new ArrayList<>(bookRepository.findAll().stream()
+                .filter(b -> matchesBestseller(b.getTitle()))
+                .toList());
+        if (bestsellers.isEmpty()) {
+            bestsellers = new ArrayList<>(bookRepository.findAll());
         }
-        List<Book> shuffled = new ArrayList<>(bookRepository.findAll());
-        Collections.shuffle(shuffled);
-        return shuffled.stream().limit(limit).toList();
+        Collections.shuffle(bestsellers);
+        return bestsellers.stream().limit(limit).toList();
+    }
+
+    private boolean matchesBestseller(String title) {
+        if (title == null || title.isBlank()) {
+            return false;
+        }
+        String t = title.toLowerCase();
+        return WORLD_BESTSELLERS.stream()
+                .anyMatch(b -> t.contains(b.toLowerCase()) || b.toLowerCase().contains(t));
     }
 }

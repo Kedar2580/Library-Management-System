@@ -1,6 +1,7 @@
 /Users/macbook/Movies/LIB/src/main/java/com/library/LibraryApplication.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/config/DataSeeder.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/config/GlobalModelAdvice.java
+/Users/macbook/Movies/LIB/src/main/java/com/library/config/RatingSyncRunner.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/config/SecurityConfig.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/controller/AdminController.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/controller/AuthController.java
@@ -17,6 +18,7 @@
 /Users/macbook/Movies/LIB/src/main/java/com/library/controller/IssuesController.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/controller/MemberController.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/controller/MyBooksController.java
+/Users/macbook/Movies/LIB/src/main/java/com/library/controller/MyFinesController.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/controller/NotificationController.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/controller/ProfileController.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/controller/PublisherController.java
@@ -75,6 +77,7 @@
 /Users/macbook/Movies/LIB/src/main/java/com/library/service/EngagementService.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/service/NotificationService.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/service/PdfService.java
+/Users/macbook/Movies/LIB/src/main/java/com/library/service/RatingSyncService.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/service/ReportService.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/service/SettingsService.java
 /Users/macbook/Movies/LIB/src/main/java/com/library/service/UserService.java

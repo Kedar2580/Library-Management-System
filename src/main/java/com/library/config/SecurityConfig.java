@@ -65,7 +65,7 @@ public class SecurityConfig {
                                 "/webjars/**", "/favicon.ico", "/error", "/h2-console/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/books/new", "/books/*/edit", "/books/*/delete",
-                                "/books/import", "/categories/**", "/authors/**", "/publishers/**",
+                                "/books/import", "/books/ratings/sync", "/categories/**", "/authors/**", "/publishers/**",
                                 "/issues/**", "/returns/**", "/reservations/**", "/fines/**",
                                 "/reports/**", "/members/**", "/admin/feedback", "/reviews/delete/**")
                         .hasAnyRole("ADMIN", "LIBRARIAN")
@@ -80,7 +80,7 @@ public class SecurityConfig {
                         .permitAll())
                 .logout(logout -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/auth/logout", "POST"))
-                        .logoutSuccessUrl("/auth/login?logout")
+                        .logoutSuccessUrl("/")
                         .permitAll())
                 .exceptionHandling(ex -> ex.accessDeniedHandler((request, response, e) ->
                         response.sendRedirect("/auth/access-denied")))

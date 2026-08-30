@@ -10,7 +10,12 @@
                        placeholder="Search books..." th:value="${q}">
                 <button class="btn btn-outline-primary"><i class="bi bi-search"></i></button>
             </form>
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 flex-wrap">
+                <form th:action="@{/books/ratings/sync}" method="post">
+                    <button class="btn btn-outline-warning" th:if="${isLibrarian}">
+                        <i class="bi bi-globe me-1"></i>Sync Ratings from Internet
+                    </button>
+                </form>
                 <a class="btn btn-outline-success" th:href="@{/books/export}"><i class="bi bi-download me-1"></i>Export CSV</a>
                 <a class="btn btn-outline-danger" th:href="@{/reports/catalog/pdf}"><i class="bi bi-filetype-pdf me-1"></i>Catalog PDF</a>
                 <a class="btn btn-outline-info" th:href="@{/books/import}"><i class="bi bi-upload me-1"></i>Import CSV</a>

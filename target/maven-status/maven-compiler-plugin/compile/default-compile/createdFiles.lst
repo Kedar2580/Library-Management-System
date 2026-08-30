@@ -3,7 +3,9 @@ com/library/repository/BookIssueRepository.class
 com/library/controller/CartController.class
 com/library/service/BackupService.class
 com/library/service/ReportService.class
+com/library/controller/MyFinesController.class
 com/library/controller/BookController.class
+com/library/service/RatingSyncService.class
 com/library/controller/MyBooksController.class
 com/library/repository/ReservationRepository.class
 com/library/controller/AdminController.class
@@ -32,8 +34,10 @@ com/library/controller/AdminController$ActiveSession.class
 com/library/model/PaymentMethod.class
 com/library/controller/AuthController.class
 com/library/controller/ReturnsController.class
+com/library/config/RatingSyncRunner.class
 com/library/security/CustomUserDetailsService.class
 com/library/controller/CategoryController.class
+com/library/service/RatingSyncService$Rating.class
 com/library/model/Activity.class
 com/library/model/Publisher.class
 com/library/controller/ProfileController.class

@@ -45,6 +45,7 @@ public class CartController {
                 .map(CartItem::getBook)
                 .toList();
         model.addAttribute("cartBooks", books);
+        model.addAttribute("maxCartItems", CartService.MAX_CART_ITEMS);
         return "my/cart";
     }
 
@@ -58,6 +59,11 @@ public class CartController {
         if (book == null || !book.isAvailable()) {
             ra.addFlashAttribute("error", "This book is not available to borrow.");
             return "redirect:/my/books";
+        }
+        if (cartService.isFull(member)) {
+            ra.addFlashAttribute("error", "Cart is full. You can add up to "
+                    + CartService.MAX_CART_ITEMS + " books at a time. Remove one to add another.");
+            return samePageRedirect(request, "/my/books");
         }
         if (cartService.add(member, book)) {
             ra.addFlashAttribute("success", "Book added to cart. Ready to checkout?");

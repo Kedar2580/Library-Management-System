@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Random;
 
 @Component
 public class DataSeeder implements CommandLineRunner {
@@ -18,18 +21,20 @@ public class DataSeeder implements CommandLineRunner {
     private final PublisherRepository publisherRepository;
     private final BookRepository bookRepository;
     private final SettingRepository settingRepository;
+    private final ReviewRepository reviewRepository;
     private final PasswordEncoder passwordEncoder;
 
     public DataSeeder(UserRepository userRepository, CategoryRepository categoryRepository,
                       AuthorRepository authorRepository, PublisherRepository publisherRepository,
                       BookRepository bookRepository, SettingRepository settingRepository,
-                      PasswordEncoder passwordEncoder) {
+                      ReviewRepository reviewRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.authorRepository = authorRepository;
         this.publisherRepository = publisherRepository;
         this.bookRepository = bookRepository;
         this.settingRepository = settingRepository;
+        this.reviewRepository = reviewRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -41,6 +46,8 @@ public class DataSeeder implements CommandLineRunner {
             seedUsers();
         }
         seedCatalog();
+        boostAvailability();
+        seedReviews();
     }
 
     private void seedSettings() {
@@ -212,7 +219,7 @@ public class DataSeeder implements CommandLineRunner {
 
         int i = 0;
         for (String[] b : books) {
-            addBook(b[0], b[1], b[2], b[3], b[4], Integer.parseInt(b[5]), 3 + (i % 4), shelfPrefix(b[2]) + "-" + String.format("%02d", i + 1));
+            addBook(b[0], b[1], b[2], b[3], b[4], Integer.parseInt(b[5]), 12 + (i % 5), shelfPrefix(b[2]) + "-" + String.format("%02d", i + 1));
             i++;
         }
     }
@@ -275,5 +282,69 @@ public class DataSeeder implements CommandLineRunner {
         b.setShelfLocation(shelf);
         b.setDescription("A top " + categoryName + " book recommended by the library.");
         bookRepository.save(b);
+    }
+
+    /**
+     * Tops up every existing book so it has at least MIN_COPIES, adding the shortfall
+     * to both total and available copies. Idempotent: it stops once the minimum is reached,
+     * so restarts never compound the counts.
+     */
+    private void boostAvailability() {
+        int minCopies = 12;
+        for (Book b : bookRepository.findAll()) {
+            if (b.getTotalCopies() >= minCopies) {
+                continue;
+            }
+            int shortfall = minCopies - b.getTotalCopies();
+            b.setTotalCopies(b.getTotalCopies() + shortfall);
+            b.setAvailableCopies(b.getAvailableCopies() + shortfall);
+            bookRepository.save(b);
+        }
+    }
+
+    /**
+     * Seeds a few sample reviews per book so the Reviews section is populated.
+     * Runs once (when no reviews exist) so restarts don't duplicate them.
+     */
+    private void seedReviews() {
+        if (reviewRepository.count() > 0) {
+            return;
+        }
+        List<User> members = userRepository.findByRole(Role.MEMBER);
+        if (members.size() < 2) {
+            return;
+        }
+        Random random = new Random(42);
+        String[] comments = {
+                "A truly engaging read, highly recommended.",
+                "Great book, kept me hooked till the end.",
+                "Insightful and well written.",
+                "Loved it. Will definitely read again.",
+                "One of the best books in the collection.",
+                "A classic worth every page."
+        };
+        int count = 0;
+        for (Book book : bookRepository.findAll()) {
+            int reviewCount = 2 + random.nextInt(2);
+            for (int r = 0; r < reviewCount && r < members.size(); r++) {
+                Review review = new Review();
+                review.setBook(book);
+                review.setUser(members.get(r));
+                review.setRating(3 + random.nextInt(3));
+                review.setComment(comments[random.nextInt(comments.length)]);
+                review.setCreatedAt(LocalDateTime.now().minusDays(random.nextInt(30)));
+                reviewRepository.save(review);
+                count++;
+            }
+        }
+        // Refresh book aggregates to include the seeded reviews (internet sync may overwrite later).
+        for (Book book : bookRepository.findAll()) {
+            List<Review> reviews = reviewRepository.findByBookIdOrderByCreatedAtDesc(book.getId());
+            double sum = reviews.stream().mapToInt(Review::getRating).sum();
+            book.setAvgRating(reviews.isEmpty() ? 0 : sum / reviews.size());
+            book.setReviewCount(reviews.size());
+            bookRepository.save(book);
+        }
+        System.out.println("Seeded " + count + " sample reviews.");
     }
 }
